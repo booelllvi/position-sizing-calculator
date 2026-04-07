@@ -853,7 +853,7 @@
           <tbody id="dangerBody"></tbody>
         </table>
 
-        <div class="risk-note">
+        <div class="risk-note" id="riskNote" style="display:none">
           ⚠ 同樣股數，不同止損距離，虧損差距 <strong id="riskRangeSpan">—</strong>。這就是風控失控。
         </div>
       </div>
@@ -1181,9 +1181,9 @@
         });
       }
 
-      if (maxR > -Infinity && minR !== maxR) {
-        $('riskRangeSpan').textContent = fmt(minR, 0) + ' ~ ' + fmt(maxR, 0);
-      }
+      const showNote = !maxRisk && maxR > -Infinity && minR !== maxR;
+      $('riskNote').style.display = showNote ? 'block' : 'none';
+      if (showNote) $('riskRangeSpan').textContent = fmt(minR, 0) + ' ~ ' + fmt(maxR, 0);
     }
 
     /* ── Keyboard ── */
