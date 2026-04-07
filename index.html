@@ -8,921 +8,819 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
   <style>
-    /* ===== DESIGN TOKENS ===== */
     :root {
-      --bg:          #060a13;
-      --surface:     #0c1220;
-      --surface-2:   #101828;
-      --border:      rgba(255,255,255,0.06);
-      --border-hi:   rgba(255,255,255,0.12);
-
-      --blue:        #4f8ef7;
-      --blue-dim:    rgba(79,142,247,0.12);
-      --blue-glow:   rgba(79,142,247,0.25);
-
-      --green:       #0ec97f;
-      --green-dim:   rgba(14,201,127,0.1);
-      --green-glow:  rgba(14,201,127,0.25);
-
-      --red:         #f24e4e;
-      --red-dim:     rgba(242,78,78,0.1);
-      --red-glow:    rgba(242,78,78,0.25);
-
-      --amber:       #f5a623;
-      --amber-dim:   rgba(245,166,35,0.1);
-
-      --text:        #dde4f0;
-      --text-muted:  #5a6a82;
-      --text-dim:    #283040;
-
+      --bg:         #060a13;
+      --surface:    #0c1220;
+      --surface-2:  #101828;
+      --border:     rgba(255,255,255,0.06);
+      --border-hi:  rgba(255,255,255,0.12);
+      --blue:       #4f8ef7;
+      --blue-dim:   rgba(79,142,247,0.12);
+      --green:      #0ec97f;
+      --green-dim:  rgba(14,201,127,0.1);
+      --red:        #f24e4e;
+      --red-dim:    rgba(242,78,78,0.1);
+      --amber:      #f5a623;
+      --amber-dim:  rgba(245,166,35,0.1);
+      --text:       #dde4f0;
+      --text-muted: #5a6a82;
+      --text-dim:   #283040;
       --fh: 'Syne', sans-serif;
       --fm: 'JetBrains Mono', monospace;
       --fb: 'DM Sans', sans-serif;
-
-      --r-sm: 8px;
-      --r-md: 12px;
-      --r-lg: 16px;
-      --r-xl: 20px;
+      --r-sm: 8px; --r-md: 12px; --r-lg: 16px;
     }
 
-    /* ===== RESET ===== */
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    html { font-size: 16px; scroll-behavior: smooth; }
+    html { font-size: 16px; }
 
-    /* ===== BASE ===== */
     body {
       background: var(--bg);
       color: var(--text);
       font-family: var(--fb);
-      min-height: 100vh;
-      overflow-x: hidden;
-      line-height: 1.5;
+      height: 100vh;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
     }
 
-    /* Background atmosphere */
     body::before {
       content: '';
       position: fixed;
       inset: 0;
       background:
-        radial-gradient(ellipse 80% 50% at 20% -10%, rgba(79,142,247,0.06) 0%, transparent 60%),
-        radial-gradient(ellipse 60% 40% at 80% 110%, rgba(14,201,127,0.04) 0%, transparent 50%),
-        linear-gradient(rgba(79,142,247,0.025) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(79,142,247,0.025) 1px, transparent 1px);
-      background-size: auto, auto, 48px 48px, 48px 48px;
+        radial-gradient(ellipse 80% 50% at 20% -10%, rgba(79,142,247,0.05) 0%, transparent 60%),
+        radial-gradient(ellipse 60% 40% at 80% 110%, rgba(14,201,127,0.03) 0%, transparent 50%);
       pointer-events: none;
       z-index: 0;
     }
 
-    /* ===== LAYOUT ===== */
-    .page {
+    /* ── TOPBAR ── */
+    .topbar {
       position: relative;
-      z-index: 1;
-      max-width: 1060px;
-      margin: 0 auto;
-      padding: 0 1.5rem 4rem;
-    }
-
-    /* ===== HEADER ===== */
-    header {
-      text-align: center;
-      padding: 3.5rem 1rem 2.5rem;
-    }
-
-    .badge {
-      display: inline-flex;
+      z-index: 10;
+      display: flex;
       align-items: center;
-      gap: 0.5rem;
-      background: var(--blue-dim);
-      border: 1px solid rgba(79,142,247,0.22);
-      color: var(--blue);
+      justify-content: space-between;
+      padding: 0 16px;
+      height: 44px;
+      border-bottom: 1px solid var(--border);
+      background: rgba(6,10,19,0.95);
+      backdrop-filter: blur(8px);
+      flex-shrink: 0;
+    }
+
+    .topbar-title {
       font-family: var(--fm);
-      font-size: 0.68rem;
-      letter-spacing: 0.14em;
-      text-transform: uppercase;
-      padding: 0.35rem 0.9rem;
-      border-radius: 100px;
-      margin-bottom: 1.4rem;
-    }
-
-    .badge-dot {
-      width: 6px; height: 6px;
-      background: var(--blue);
-      border-radius: 50%;
-      animation: blink 2.2s ease-in-out infinite;
-    }
-
-    @keyframes blink {
-      0%,100% { opacity: 1; transform: scale(1); }
-      50%      { opacity: 0.3; transform: scale(0.7); }
-    }
-
-    h1 {
-      font-family: var(--fh);
-      font-size: clamp(1.9rem, 4.5vw, 3rem);
-      font-weight: 800;
-      letter-spacing: -0.03em;
-      background: linear-gradient(150deg, #e8eeff 20%, #7a94cc 100%);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-      line-height: 1.1;
-      margin-bottom: 0.9rem;
-    }
-
-    .subtitle {
+      font-size: 11px;
       color: var(--text-muted);
-      font-size: 0.95rem;
-      font-style: italic;
-      letter-spacing: 0.01em;
+      letter-spacing: 0.08em;
     }
+    .topbar-title span { color: var(--blue); font-weight: 600; }
 
-    /* ===== CARD ===== */
-    .card {
+    /* ── TABS ── */
+    .tabs {
+      display: flex;
+      gap: 2px;
       background: var(--surface);
       border: 1px solid var(--border);
-      border-radius: var(--r-xl);
-      padding: 1.75rem;
+      border-radius: 8px;
+      padding: 2px;
+    }
+
+    .tab-btn {
+      font-family: var(--fm);
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      color: var(--text-muted);
+      background: none;
+      border: none;
+      padding: 4px 12px;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .tab-btn:hover { color: var(--text); }
+    .tab-btn.active {
+      background: var(--surface-2);
+      color: var(--text);
+    }
+    .tab-btn.active.size-tab  { color: var(--green); }
+    .tab-btn.active.check-tab { color: var(--amber); }
+    .tab-btn.active.learn-tab { color: var(--blue); }
+
+    /* ── CONTENT ── */
+    .content {
       position: relative;
-      overflow: hidden;
+      z-index: 1;
+      flex: 1;
+      overflow-y: auto;
+      overflow-x: hidden;
+      padding: 14px 14px 20px;
     }
 
-    .card::after {
-      content: '';
-      position: absolute;
-      top: 0; left: 10%; right: 10%;
-      height: 1px;
-      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.08), transparent);
-    }
+    .content::-webkit-scrollbar { width: 4px; }
+    .content::-webkit-scrollbar-track { background: transparent; }
+    .content::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.08); border-radius: 2px; }
 
-    .card.green-accent { border-color: rgba(14,201,127,0.18); }
-    .card.red-accent   { border-color: rgba(242,78,78,0.18); }
-    .card.blue-accent  { border-color: rgba(79,142,247,0.18); }
+    .tab-pane { display: none; }
+    .tab-pane.active { display: block; }
 
-    /* ===== CARD LABEL ===== */
-    .card-label {
-      font-family: var(--fm);
-      font-size: 0.68rem;
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-      color: var(--text-muted);
-      margin-bottom: 1.5rem;
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-    }
-
-    .dot { width: 7px; height: 7px; border-radius: 50%; }
-    .dot-green  { background: var(--green); }
-    .dot-red    { background: var(--red); }
-    .dot-blue   { background: var(--blue); }
-    .dot-amber  { background: var(--amber); }
-
-    /* ===== FORMULA BAR ===== */
-    .formula-bar {
-      background: rgba(0,0,0,0.25);
-      border: 1px solid var(--border);
-      border-radius: var(--r-sm);
-      padding: 0.7rem 1rem;
-      font-family: var(--fm);
-      font-size: 0.82rem;
-      color: var(--text-muted);
-      margin-bottom: 1.4rem;
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-      flex-wrap: wrap;
-    }
-
-    .formula-bar .op  { color: var(--text-muted); }
-    .formula-bar .hi  { color: var(--blue); font-weight: 600; }
-    .formula-bar .eq  { color: var(--green); font-weight: 700; }
-    .formula-bar .arr { color: var(--text-dim); font-size: 1rem; }
-
-    /* ===== INPUTS ===== */
-    .input-row {
+    /* ── INPUT GROUP ── */
+    .input-strip {
       display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 1rem;
-      margin-bottom: 1.25rem;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 8px;
+      margin-bottom: 8px;
     }
 
-    .field { display: flex; flex-direction: column; gap: 0.45rem; }
+    .field { display: flex; flex-direction: column; gap: 4px; }
 
     .field label {
       font-family: var(--fm);
-      font-size: 0.65rem;
+      font-size: 9px;
       letter-spacing: 0.1em;
       text-transform: uppercase;
       color: var(--text-muted);
     }
 
-    .input-wrap {
-      position: relative;
-      display: flex;
-      align-items: center;
-    }
+    .input-wrap { position: relative; display: flex; align-items: center; }
 
     .input-wrap .pfx {
       position: absolute;
-      left: 0.9rem;
+      left: 9px;
       color: var(--text-muted);
       font-family: var(--fm);
-      font-size: 0.9rem;
+      font-size: 12px;
       pointer-events: none;
-      user-select: none;
     }
 
     input[type="number"] {
       width: 100%;
-      background: rgba(0,0,0,0.3);
+      background: var(--surface);
       border: 1px solid rgba(255,255,255,0.07);
       border-radius: var(--r-sm);
-      padding: 0.75rem 0.9rem 0.75rem 2rem;
+      padding: 9px 8px 9px 22px;
       color: var(--text);
       font-family: var(--fm);
-      font-size: 0.95rem;
+      font-size: 15px;
+      font-weight: 500;
       outline: none;
-      transition: border-color 0.18s, box-shadow 0.18s, background 0.18s;
+      transition: border-color 0.15s, box-shadow 0.15s, background 0.15s;
       -moz-appearance: textfield;
     }
-
     input[type="number"]::-webkit-inner-spin-button,
     input[type="number"]::-webkit-outer-spin-button { -webkit-appearance: none; }
-
     input[type="number"]:focus {
-      border-color: rgba(79,142,247,0.45);
-      box-shadow: 0 0 0 3px rgba(79,142,247,0.1);
+      border-color: rgba(79,142,247,0.5);
+      box-shadow: 0 0 0 2px rgba(79,142,247,0.1);
       background: rgba(79,142,247,0.04);
     }
-
     input[type="number"].error {
       border-color: rgba(242,78,78,0.5);
-      box-shadow: 0 0 0 3px rgba(242,78,78,0.1);
+      box-shadow: 0 0 0 2px rgba(242,78,78,0.1);
+    }
+    input[type="number"].ok {
+      border-color: rgba(14,201,127,0.3);
     }
 
-    /* ===== BUTTON ===== */
-    .btn-calc {
-      width: 100%;
-      padding: 0.95rem 1rem;
-      background: linear-gradient(135deg, #4f8ef7, #6f6bf7);
-      border: none;
-      border-radius: var(--r-md);
-      color: #fff;
-      font-family: var(--fh);
-      font-size: 0.92rem;
-      font-weight: 700;
-      letter-spacing: 0.04em;
-      cursor: pointer;
-      position: relative;
-      overflow: hidden;
-      transition: transform 0.15s, box-shadow 0.15s;
+    /* no-prefix inputs */
+    input[type="number"].no-pfx { padding-left: 10px; }
+
+    /* ── QUICK PRESETS ── */
+    .presets {
+      display: flex;
+      gap: 6px;
+      margin-bottom: 12px;
+      align-items: center;
     }
 
-    .btn-calc::before {
-      content: '';
-      position: absolute;
-      inset: 0;
-      background: linear-gradient(135deg, rgba(255,255,255,0.12) 0%, transparent 60%);
-    }
-
-    .btn-calc:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 10px 28px rgba(79,142,247,0.35);
-    }
-
-    .btn-calc:active { transform: translateY(0); box-shadow: none; }
-
-    /* ===== ERROR MSG ===== */
-    .err-msg {
-      display: none;
-      margin-top: 0.85rem;
-      padding: 0.65rem 0.9rem;
-      background: var(--red-dim);
-      border: 1px solid rgba(242,78,78,0.2);
-      border-radius: var(--r-sm);
+    .preset-label {
       font-family: var(--fm);
-      font-size: 0.78rem;
-      color: var(--red);
+      font-size: 9px;
+      color: var(--text-dim);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      margin-right: 2px;
     }
 
-    /* ===== RESULTS ===== */
-    .results {
-      display: none;
-      margin-top: 1.4rem;
-      animation: fadeUp 0.3s ease both;
+    .preset-btn {
+      font-family: var(--fm);
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--text-muted);
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 4px 10px;
+      cursor: pointer;
+      transition: all 0.12s;
     }
+    .preset-btn:hover { color: var(--green); border-color: rgba(14,201,127,0.3); background: rgba(14,201,127,0.05); }
+    .preset-btn.active { color: var(--green); border-color: rgba(14,201,127,0.4); background: rgba(14,201,127,0.08); }
 
-    .results.show { display: block; }
-
-    @keyframes fadeUp {
-      from { opacity: 0; transform: translateY(10px); }
-      to   { opacity: 1; transform: translateY(0); }
-    }
-
-    .divider {
-      height: 1px;
-      background: linear-gradient(90deg, transparent, var(--border-hi), transparent);
-      margin: 1.25rem 0;
-    }
-
-    /* Primary result */
-    .res-hero {
-      background: var(--green-dim);
+    /* ── RESULT HERO ── */
+    .result-hero {
+      background: linear-gradient(135deg, rgba(14,201,127,0.07), rgba(14,201,127,0.03));
       border: 1px solid rgba(14,201,127,0.2);
       border-radius: var(--r-lg);
-      padding: 1.4rem;
-      text-align: center;
-      margin-bottom: 1rem;
+      padding: 14px 16px 12px;
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      min-height: 72px;
+      transition: all 0.2s;
     }
 
-    .res-hero .rh-label {
+    .result-hero.empty {
+      border-color: var(--border);
+      background: var(--surface);
+    }
+
+    .result-hero .rh-left { flex: 1; }
+
+    .result-hero .rh-label {
       font-family: var(--fm);
-      font-size: 0.65rem;
+      font-size: 9px;
       letter-spacing: 0.14em;
       text-transform: uppercase;
-      color: rgba(14,201,127,0.7);
-      margin-bottom: 0.3rem;
+      color: rgba(14,201,127,0.6);
+      margin-bottom: 2px;
     }
 
-    .res-hero .rh-num {
+    .result-hero.empty .rh-label { color: var(--text-dim); }
+
+    .result-hero .rh-num {
       font-family: var(--fm);
-      font-size: 3rem;
+      font-size: 3.2rem;
       font-weight: 700;
       color: var(--green);
       line-height: 1;
-      letter-spacing: -0.02em;
+      letter-spacing: -0.03em;
     }
 
-    .res-hero .rh-unit {
-      font-size: 0.85rem;
-      color: rgba(14,201,127,0.6);
-      margin-top: 0.25rem;
+    .result-hero.empty .rh-num { color: var(--text-dim); font-size: 2rem; }
+
+    .result-hero .rh-unit {
+      font-family: var(--fm);
+      font-size: 11px;
+      color: rgba(14,201,127,0.5);
+      margin-top: 3px;
     }
 
-    /* Secondary stats */
-    .res-stats {
+    .result-hero .rh-right {
+      text-align: right;
+    }
+
+    .result-hero .rh-cap {
+      font-family: var(--fm);
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+
+    .result-hero .rh-cap span {
+      display: block;
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--amber);
+      margin-top: 2px;
+    }
+
+    .result-hero .rh-stop {
+      margin-top: 8px;
+      font-family: var(--fm);
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+    .result-hero .rh-stop span { color: var(--red); font-weight: 600; }
+
+    /* ── MINI STATS ── */
+    .mini-stats {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 0.75rem;
-      margin-bottom: 1rem;
+      gap: 6px;
+      margin-bottom: 10px;
     }
 
-    .stat-box {
-      background: rgba(0,0,0,0.2);
+    .mini-stat {
+      background: var(--surface);
       border: 1px solid var(--border);
       border-radius: var(--r-sm);
-      padding: 0.9rem 1rem;
+      padding: 8px 10px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
     }
 
-    .stat-box .sb-label {
+    .mini-stat .ms-label {
       font-family: var(--fm);
-      font-size: 0.62rem;
-      letter-spacing: 0.1em;
+      font-size: 9px;
+      letter-spacing: 0.08em;
       text-transform: uppercase;
       color: var(--text-muted);
-      margin-bottom: 0.3rem;
     }
 
-    .stat-box .sb-val {
+    .mini-stat .ms-val {
       font-family: var(--fm);
-      font-size: 1.15rem;
+      font-size: 13px;
       font-weight: 600;
       color: var(--text);
     }
 
-    .stat-box.amber-box .sb-val { color: var(--amber); }
-    .stat-box.blue-box  .sb-val { color: var(--blue); }
+    .mini-stat .ms-val.green { color: var(--green); }
+    .mini-stat .ms-val.amber { color: var(--amber); }
+    .mini-stat .ms-val.red   { color: var(--red); }
+    .mini-stat .ms-val.blue  { color: var(--blue); }
 
-    /* RR targets */
-    .rr-label {
+    /* ── RR STRIP ── */
+    .rr-section-label {
       font-family: var(--fm);
-      font-size: 0.62rem;
+      font-size: 9px;
       letter-spacing: 0.1em;
       text-transform: uppercase;
-      color: var(--text-muted);
-      margin-bottom: 0.65rem;
+      color: var(--text-dim);
+      margin-bottom: 6px;
     }
 
-    .rr-row {
+    .rr-strip {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
-      gap: 0.6rem;
+      gap: 6px;
     }
 
     .rr-cell {
       background: var(--blue-dim);
-      border: 1px solid rgba(79,142,247,0.15);
+      border: 1px solid rgba(79,142,247,0.12);
       border-radius: var(--r-sm);
-      padding: 0.8rem 0.6rem;
+      padding: 8px 6px;
       text-align: center;
     }
 
     .rr-cell .rc-ratio {
       font-family: var(--fm);
-      font-size: 0.62rem;
+      font-size: 9px;
       color: var(--blue);
       letter-spacing: 0.06em;
-      margin-bottom: 0.25rem;
+      margin-bottom: 3px;
     }
 
     .rr-cell .rc-price {
       font-family: var(--fm);
-      font-size: 1.05rem;
+      font-size: 14px;
       font-weight: 700;
       color: var(--text);
     }
 
     .rr-cell .rc-profit {
       font-family: var(--fm);
-      font-size: 0.7rem;
+      font-size: 10px;
       color: var(--green);
-      margin-top: 0.2rem;
+      margin-top: 2px;
     }
 
-    /* ===== TWO-COLUMN LAYOUT ===== */
-    .two-col {
+    /* ── ERROR ── */
+    .err-msg {
+      display: none;
+      padding: 6px 10px;
+      background: var(--red-dim);
+      border: 1px solid rgba(242,78,78,0.2);
+      border-radius: var(--r-sm);
+      font-family: var(--fm);
+      font-size: 11px;
+      color: var(--red);
+      margin-bottom: 8px;
+    }
+
+    /* ── DIVIDER ── */
+    .divider {
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--border-hi), transparent);
+      margin: 10px 0;
+    }
+
+    /* ── CHECK TAB ── */
+    .check-hero {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 1.25rem;
-      margin-bottom: 1.25rem;
+      gap: 8px;
+      margin-bottom: 10px;
     }
 
-    /* ===== DANGER TABLE ===== */
+    .check-box {
+      border-radius: var(--r-md);
+      padding: 12px;
+      text-align: center;
+    }
+    .check-box.risk { background: var(--red-dim); border: 1px solid rgba(242,78,78,0.25); }
+    .check-box.cap  { background: var(--amber-dim); border: 1px solid rgba(245,166,35,0.25); }
+
+    .check-box .cb-label {
+      font-family: var(--fm);
+      font-size: 9px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      margin-bottom: 4px;
+    }
+    .check-box.risk .cb-label { color: rgba(242,78,78,0.7); }
+    .check-box.cap  .cb-label { color: rgba(245,166,35,0.7); }
+
+    .check-box .cb-num {
+      font-family: var(--fm);
+      font-size: 1.8rem;
+      font-weight: 700;
+      line-height: 1;
+    }
+    .check-box.risk .cb-num { color: var(--red); }
+    .check-box.cap  .cb-num { color: var(--amber); }
+
+    .check-box .cb-sub {
+      font-family: var(--fm);
+      font-size: 10px;
+      margin-top: 3px;
+    }
+    .check-box.risk .cb-sub { color: rgba(242,78,78,0.5); }
+    .check-box.cap  .cb-sub { color: rgba(245,166,35,0.5); }
+
+    .verdict {
+      padding: 8px 12px;
+      border-radius: var(--r-sm);
+      font-family: var(--fm);
+      font-size: 11px;
+      line-height: 1.5;
+      margin-bottom: 10px;
+      display: none;
+    }
+    .verdict.show { display: flex; align-items: flex-start; gap: 8px; }
+    .verdict.safe   { background: rgba(14,201,127,0.07); border: 1px solid rgba(14,201,127,0.18); color: rgba(14,201,127,0.85); }
+    .verdict.warn   { background: var(--amber-dim);      border: 1px solid rgba(245,166,35,0.2);  color: rgba(245,166,35,0.85); }
+    .verdict.danger { background: var(--red-dim);        border: 1px solid rgba(242,78,78,0.2);   color: rgba(242,78,78,0.85); }
+    .verdict-icon { font-size: 13px; flex-shrink: 0; margin-top: 1px; }
+
+    /* amber rr cells */
+    .rr-cell-amber {
+      background: var(--amber-dim);
+      border: 1px solid rgba(245,166,35,0.15);
+      border-radius: var(--r-sm);
+      padding: 8px 6px;
+      text-align: center;
+    }
+    .rr-cell-amber .rc-ratio { font-family: var(--fm); font-size: 9px; color: var(--amber); letter-spacing: 0.06em; margin-bottom: 3px; }
+    .rr-cell-amber .rc-price { font-family: var(--fm); font-size: 14px; font-weight: 700; color: var(--text); }
+    .rr-cell-amber .rc-profit { font-family: var(--fm); font-size: 10px; color: var(--green); margin-top: 2px; }
+
+    /* ── LEARN TAB ── */
+    .learn-section { margin-bottom: 14px; }
+
+    .section-title {
+      font-family: var(--fm);
+      font-size: 9px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .section-title::before {
+      content: '';
+      display: inline-block;
+      width: 6px; height: 6px;
+      border-radius: 50%;
+    }
+    .section-title.red::before   { background: var(--red); }
+    .section-title.amber::before { background: var(--amber); }
+    .section-title.blue::before  { background: var(--blue); }
+
     .danger-inputs {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 0.85rem;
-      margin-bottom: 1.1rem;
+      gap: 8px;
+      margin-bottom: 10px;
     }
 
     table {
       width: 100%;
       border-collapse: collapse;
       font-family: var(--fm);
-      font-size: 0.82rem;
+      font-size: 11px;
+      margin-bottom: 8px;
     }
-
     thead th {
       text-align: left;
       color: var(--text-muted);
-      font-size: 0.62rem;
+      font-size: 9px;
       letter-spacing: 0.1em;
       text-transform: uppercase;
-      padding: 0 0.75rem 0.65rem;
+      padding: 0 8px 6px;
       border-bottom: 1px solid var(--border);
     }
-
-    tbody tr { transition: background 0.15s; }
     tbody tr:hover { background: rgba(255,255,255,0.02); }
-
-    tbody td {
-      padding: 0.58rem 0.75rem;
-      border-bottom: 1px solid rgba(255,255,255,0.025);
-    }
-
+    tbody td { padding: 6px 8px; border-bottom: 1px solid rgba(255,255,255,0.025); }
     tbody tr:last-child td { border-bottom: none; }
 
     .pill {
       display: inline-flex;
       align-items: center;
-      gap: 0.3rem;
-      padding: 0.18rem 0.6rem;
+      padding: 2px 7px;
       border-radius: 100px;
-      font-size: 0.7rem;
+      font-size: 10px;
       font-weight: 500;
     }
-
     .pill-low  { background: rgba(14,201,127,0.1);  color: var(--green); }
     .pill-med  { background: rgba(245,166,35,0.1);  color: var(--amber); }
-    .pill-high { background: rgba(242,78,78,0.1);   color: var(--red);   }
-    .pill-max  { background: rgba(242,78,78,0.2);   color: var(--red);   font-weight: 700; }
+    .pill-high { background: rgba(242,78,78,0.1);   color: var(--red); }
+    .pill-max  { background: rgba(242,78,78,0.2);   color: var(--red); font-weight: 700; }
 
-    .risk-range-note {
-      margin-top: 1rem;
-      padding: 0.75rem 1rem;
-      background: rgba(242,78,78,0.06);
-      border: 1px solid rgba(242,78,78,0.14);
+    .risk-note {
+      padding: 8px 10px;
+      background: rgba(242,78,78,0.05);
+      border: 1px solid rgba(242,78,78,0.12);
       border-radius: var(--r-sm);
-      font-size: 0.8rem;
+      font-size: 11px;
       color: #8a9ab5;
-      line-height: 1.6;
+      line-height: 1.5;
+      margin-bottom: 12px;
     }
+    .risk-note strong { color: var(--red); }
 
-    .risk-range-note strong { color: var(--red); }
-
-    /* ===== MINDSET ===== */
-    .mindset-row {
+    .mindset-grid {
       display: grid;
-      grid-template-columns: 1fr auto 1fr;
-      gap: 1rem;
-      align-items: center;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin-bottom: 12px;
     }
 
     .mbox {
       border-radius: var(--r-md);
-      padding: 1.1rem;
+      padding: 10px 12px;
     }
-
-    .mbox-wrong {
-      background: var(--red-dim);
-      border: 1px solid rgba(242,78,78,0.18);
-    }
-
-    .mbox-right {
-      background: var(--green-dim);
-      border: 1px solid rgba(14,201,127,0.18);
-    }
+    .mbox-wrong { background: var(--red-dim);   border: 1px solid rgba(242,78,78,0.18); }
+    .mbox-right { background: var(--green-dim); border: 1px solid rgba(14,201,127,0.18); }
 
     .mbox-tag {
       font-family: var(--fm);
-      font-size: 0.62rem;
-      letter-spacing: 0.12em;
+      font-size: 9px;
+      letter-spacing: 0.1em;
       text-transform: uppercase;
-      margin-bottom: 0.55rem;
+      margin-bottom: 6px;
     }
-
     .mbox-wrong .mbox-tag { color: var(--red); }
     .mbox-right .mbox-tag { color: var(--green); }
 
-    .mbox-text {
-      font-size: 0.85rem;
-      line-height: 1.65;
-      color: var(--text);
-    }
+    .mbox-text { font-size: 12px; line-height: 1.6; color: var(--text); }
+    .mbox-text em { font-style: normal; font-weight: 700; }
 
-    .mbox-text em {
-      font-style: normal;
-      font-weight: 600;
-    }
-
-    .mbox-sub {
-      margin-top: 0.6rem;
-      font-size: 0.78rem;
-      line-height: 1.5;
-    }
-
-    .mbox-wrong .mbox-sub { color: rgba(242,78,78,0.75); }
+    .mbox-sub { margin-top: 5px; font-size: 11px; line-height: 1.5; }
+    .mbox-wrong .mbox-sub { color: rgba(242,78,78,0.7); }
     .mbox-right .mbox-sub { color: rgba(14,201,127,0.8); }
 
-    .vs-badge {
-      width: 36px; height: 36px;
-      background: rgba(255,255,255,0.05);
-      border: 1px solid var(--border-hi);
-      border-radius: 50%;
-      display: flex; align-items: center; justify-content: center;
-      font-family: var(--fh);
-      font-size: 0.7rem;
-      font-weight: 700;
-      color: var(--text-muted);
-    }
-
-    /* ===== FOOTER ===== */
-    footer {
-      text-align: center;
-      margin-top: 2rem;
-      font-family: var(--fm);
-      font-size: 0.65rem;
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-      color: var(--text-dim);
-    }
-
-    /* ===== TRAPS SECTION ===== */
     .traps-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 0.85rem;
-      margin-top: 0;
+      gap: 8px;
     }
-
     .trap-item {
       background: rgba(0,0,0,0.2);
       border: 1px solid var(--border);
       border-radius: var(--r-md);
-      padding: 1rem 1.1rem;
+      padding: 10px 12px;
     }
-
     .trap-num {
       font-family: var(--fm);
-      font-size: 1.5rem;
+      font-size: 1.2rem;
       font-weight: 700;
       color: var(--red);
       line-height: 1;
-      margin-bottom: 0.3rem;
+      margin-bottom: 3px;
     }
-
     .trap-title {
       font-family: var(--fh);
-      font-size: 0.88rem;
+      font-size: 12px;
       font-weight: 700;
       color: var(--text);
-      margin-bottom: 0.4rem;
+      margin-bottom: 4px;
     }
+    .trap-text { font-size: 11px; color: var(--text-muted); line-height: 1.5; }
 
-    .trap-text {
-      font-size: 0.8rem;
-      color: var(--text-muted);
-      line-height: 1.55;
+    /* ── HIDDEN RESULT AREAS ── */
+    .result-area { display: none; }
+    .result-area.show { display: block; }
+
+    /* ── ANIMATE ── */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(6px); }
+      to   { opacity: 1; transform: translateY(0); }
     }
+    .anim { animation: fadeUp 0.2s ease both; }
 
-    /* ===== FIXED SHARES SCENARIO ===== */
-    .card.amber-accent { border-color: rgba(245,166,35,0.22); }
-
-    .fx-input-row {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 1rem;
-      margin-bottom: 1.25rem;
-    }
-
-    .btn-calc-amber {
-      width: 100%;
-      padding: 0.95rem 1rem;
-      background: linear-gradient(135deg, #d97706, #f59e0b);
-      border: none;
-      border-radius: var(--r-md);
-      color: #0a0600;
-      font-family: var(--fh);
-      font-size: 0.92rem;
-      font-weight: 700;
-      letter-spacing: 0.04em;
-      cursor: pointer;
-      position: relative;
-      overflow: hidden;
-      transition: transform 0.15s, box-shadow 0.15s;
-    }
-
-    .btn-calc-amber::before {
-      content: '';
-      position: absolute;
-      inset: 0;
-      background: linear-gradient(135deg, rgba(255,255,255,0.15) 0%, transparent 60%);
-    }
-
-    .btn-calc-amber:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 10px 28px rgba(245,166,35,0.35);
-    }
-
-    .btn-calc-amber:active { transform: translateY(0); box-shadow: none; }
-
-    .fx-results {
-      display: none;
-      margin-top: 1.4rem;
-      animation: fadeUp 0.3s ease both;
-    }
-
-    .fx-results.show { display: block; }
-
-    /* Hero risk box for fixed-shares — amber themed */
-    .fx-hero {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 0.85rem;
-      margin-bottom: 1rem;
-    }
-
-    .fx-hero-box {
-      border-radius: var(--r-lg);
-      padding: 1.1rem 1.2rem;
-      text-align: center;
-    }
-
-    .fx-hero-box.risk-box {
-      background: var(--red-dim);
-      border: 1px solid rgba(242,78,78,0.25);
-    }
-
-    .fx-hero-box.cap-box {
-      background: var(--amber-dim);
-      border: 1px solid rgba(245,166,35,0.25);
-    }
-
-    .fx-hero-box .fhb-label {
-      font-family: var(--fm);
-      font-size: 0.62rem;
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-      margin-bottom: 0.3rem;
-    }
-
-    .risk-box .fhb-label  { color: rgba(242,78,78,0.7); }
-    .cap-box  .fhb-label  { color: rgba(245,166,35,0.7); }
-
-    .fx-hero-box .fhb-num {
-      font-family: var(--fm);
-      font-size: 1.9rem;
-      font-weight: 700;
-      line-height: 1;
-      letter-spacing: -0.02em;
-    }
-
-    .risk-box .fhb-num { color: var(--red); }
-    .cap-box  .fhb-num { color: var(--amber); }
-
-    .fx-hero-box .fhb-sub {
-      font-family: var(--fm);
-      font-size: 0.72rem;
-      margin-top: 0.25rem;
-    }
-
-    .risk-box .fhb-sub { color: rgba(242,78,78,0.55); }
-    .cap-box  .fhb-sub { color: rgba(245,166,35,0.55); }
-
-    /* Amber RR cells */
-    .rr-row-amber {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 0.6rem;
-    }
-
-    .rr-cell-amber {
-      background: var(--amber-dim);
-      border: 1px solid rgba(245,166,35,0.18);
-      border-radius: var(--r-sm);
-      padding: 0.8rem 0.6rem;
-      text-align: center;
-    }
-
-    .rr-cell-amber .rc-ratio { color: var(--amber); font-family: var(--fm); font-size: 0.62rem; letter-spacing: 0.06em; margin-bottom: 0.25rem; }
-    .rr-cell-amber .rc-price { font-family: var(--fm); font-size: 1.05rem; font-weight: 700; color: var(--text); }
-    .rr-cell-amber .rc-profit { font-family: var(--fm); font-size: 0.7rem; color: var(--green); margin-top: 0.2rem; }
-    .rr-cell-amber .rc-loss   { font-family: var(--fm); font-size: 0.7rem; color: var(--red);   margin-top: 0.1rem; }
-
-    .fx-meta {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 0.6rem;
-      margin-bottom: 1rem;
-    }
-
-    .fx-meta .stat-box { text-align: center; }
-
-    .risk-verdict {
-      margin-top: 1rem;
-      padding: 0.75rem 1rem;
-      border-radius: var(--r-sm);
-      font-family: var(--fm);
-      font-size: 0.8rem;
-      line-height: 1.6;
-      display: flex;
-      align-items: center;
-      gap: 0.75rem;
-    }
-
-    .risk-verdict.safe  { background: rgba(14,201,127,0.07); border: 1px solid rgba(14,201,127,0.18); color: rgba(14,201,127,0.85); }
-    .risk-verdict.warn  { background: var(--amber-dim);       border: 1px solid rgba(245,166,35,0.2);  color: rgba(245,166,35,0.85); }
-    .risk-verdict.danger{ background: var(--red-dim);         border: 1px solid rgba(242,78,78,0.2);   color: rgba(242,78,78,0.85); }
-
-    .risk-verdict .rv-icon { font-size: 1.1rem; flex-shrink: 0; }
-
-    /* ===== RESPONSIVE ===== */
-    @media (max-width: 720px) {
-      .two-col     { grid-template-columns: 1fr; }
-      .input-row   { grid-template-columns: 1fr 1fr; }
-      .rr-row      { grid-template-columns: 1fr 1fr; }
-      .mindset-row { grid-template-columns: 1fr; }
-      .vs-badge    { display: none; }
-      .traps-grid  { grid-template-columns: 1fr; }
-    }
-
-    @media (max-width: 480px) {
-      .input-row   { grid-template-columns: 1fr; }
-      .res-stats   { grid-template-columns: 1fr; }
-      .danger-inputs { grid-template-columns: 1fr; }
+    /* ── RESPONSIVE ── */
+    @media (max-width: 400px) {
+      .input-strip { grid-template-columns: 1fr 1fr; }
+      .presets { flex-wrap: wrap; }
+      .mini-stats { grid-template-columns: 1fr; }
+      .mindset-grid { grid-template-columns: 1fr; }
+      .traps-grid { grid-template-columns: 1fr; }
     }
   </style>
 </head>
 <body>
 
-  <!-- ===== HEADER ===== -->
-  <header>
-    <div class="badge">
-      <span class="badge-dot"></span>
-      Trading Risk Management
+  <!-- ── TOPBAR ── -->
+  <div class="topbar">
+    <div class="topbar-title"><span>PSC</span> · Position Sizing Calculator</div>
+    <div class="tabs">
+      <button class="tab-btn size-tab active"  onclick="switchTab('size')">SIZE</button>
+      <button class="tab-btn check-tab"        onclick="switchTab('check')">CHECK</button>
+      <button class="tab-btn learn-tab"        onclick="switchTab('learn')">LEARN</button>
     </div>
-    <h1>Position Sizing Calculator</h1>
-    <p class="subtitle">「股數」永遠是算出來的結果，不能是你下單的第一個決定。</p>
-  </header>
+  </div>
 
-  <div class="page">
+  <!-- ── CONTENT ── -->
+  <div class="content">
 
-    <!-- ===== MAIN CALCULATOR + DANGER ===== -->
-    <div class="two-col">
+    <!-- ══ SIZE TAB ══ -->
+    <div class="tab-pane active" id="tab-size">
 
-      <!-- LEFT: Correct calculator -->
-      <div class="card green-accent">
-        <div class="card-label">
-          <span class="dot dot-green"></span>
-          正確做法 — 固定風險 (Fixed Risk)
-        </div>
-
-        <div class="formula-bar">
-          <span class="hi">股數</span>
-          <span class="eq">=</span>
-          <span class="hi">Max Risk (1R)</span>
-          <span class="op">÷</span>
-          <span class="hi">(Entry − Stop)</span>
-        </div>
-
-        <div class="input-row">
-          <div class="field">
-            <label>Entry Price 入場價</label>
-            <div class="input-wrap">
-              <span class="pfx">$</span>
-              <input type="number" id="entry" placeholder="10.00" min="0.01" step="0.01">
-            </div>
-          </div>
-          <div class="field">
-            <label>Stop Loss 止損價</label>
-            <div class="input-wrap">
-              <span class="pfx">$</span>
-              <input type="number" id="stop" placeholder="9.50" min="0.01" step="0.01">
-            </div>
-          </div>
-          <div class="field">
-            <label>Max Risk 最大虧損 (1R)</label>
-            <div class="input-wrap">
-              <span class="pfx">$</span>
-              <input type="number" id="risk" placeholder="200" min="1" step="10">
-            </div>
+      <div class="input-strip">
+        <div class="field">
+          <label>Entry 入場</label>
+          <div class="input-wrap">
+            <span class="pfx">$</span>
+            <input type="number" id="entry" placeholder="10.00" min="0.01" step="0.01"
+                   oninput="autoCalc()" tabindex="1">
           </div>
         </div>
-
-        <button class="btn-calc" onclick="calculate()">計算安全部位 →</button>
-
-        <div class="err-msg" id="errMsg"></div>
-
-        <div class="results" id="results">
-          <div class="divider"></div>
-
-          <div class="res-hero">
-            <div class="rh-label">✓ 應買股數 (Shares to Buy)</div>
-            <div class="rh-num" id="outShares">—</div>
-            <div class="rh-unit">股 (shares)</div>
+        <div class="field">
+          <label>Stop 止損</label>
+          <div class="input-wrap">
+            <span class="pfx">$</span>
+            <input type="number" id="stop" placeholder="9.50" min="0.01" step="0.01"
+                   oninput="autoCalc()" tabindex="2">
           </div>
-
-          <div class="res-stats">
-            <div class="stat-box">
-              <div class="sb-label">每股風險 Risk/Share</div>
-              <div class="sb-val" id="outRPS">—</div>
-            </div>
-            <div class="stat-box amber-box">
-              <div class="sb-label">動用資金 Capital Used</div>
-              <div class="sb-val" id="outCap">—</div>
-            </div>
-            <div class="stat-box blue-box">
-              <div class="sb-label">實際總風險 Actual 1R</div>
-              <div class="sb-val" id="outActual">—</div>
-            </div>
-            <div class="stat-box">
-              <div class="sb-label">止損距離 Stop %</div>
-              <div class="sb-val" id="outStopPct">—</div>
-            </div>
-          </div>
-
-          <div class="rr-label">獲利目標 Target Prices (Risk/Reward)</div>
-          <div class="rr-row">
-            <div class="rr-cell">
-              <div class="rc-ratio">1:1 R/R</div>
-              <div class="rc-price" id="t1">—</div>
-              <div class="rc-profit" id="p1">—</div>
-            </div>
-            <div class="rr-cell">
-              <div class="rc-ratio">1:2 R/R</div>
-              <div class="rc-price" id="t2">—</div>
-              <div class="rc-profit" id="p2">—</div>
-            </div>
-            <div class="rr-cell">
-              <div class="rc-ratio">1:3 R/R</div>
-              <div class="rc-price" id="t3">—</div>
-              <div class="rc-profit" id="p3">—</div>
-            </div>
+        </div>
+        <div class="field">
+          <label>Max Risk 1R</label>
+          <div class="input-wrap">
+            <span class="pfx">$</span>
+            <input type="number" id="risk" placeholder="200" min="1" step="10"
+                   oninput="autoCalc(); updatePresetActive()" tabindex="3">
           </div>
         </div>
       </div>
 
-      <!-- RIGHT: Fixed shares danger -->
-      <div class="card red-accent">
-        <div class="card-label">
-          <span class="dot dot-red"></span>
-          固定股數的危險 — 風險失控
+      <div class="presets">
+        <span class="preset-label">1R:</span>
+        <button class="preset-btn" onclick="setRisk(100)"  id="p100">$100</button>
+        <button class="preset-btn" onclick="setRisk(200)"  id="p200">$200</button>
+        <button class="preset-btn" onclick="setRisk(300)"  id="p300">$300</button>
+        <button class="preset-btn" onclick="setRisk(500)"  id="p500">$500</button>
+        <button class="preset-btn" onclick="setRisk(1000)" id="p1000">$1k</button>
+      </div>
+
+      <div class="err-msg" id="errMsg"></div>
+
+      <!-- Result hero - always visible -->
+      <div class="result-hero empty" id="sizeHero">
+        <div class="rh-left">
+          <div class="rh-label">應買股數</div>
+          <div class="rh-num" id="outShares">—</div>
+          <div class="rh-unit">shares</div>
+        </div>
+        <div class="rh-right">
+          <div class="rh-cap">動用資金<span id="outCap">—</span></div>
+          <div class="rh-stop">止損距離 <span id="outStopPct">—</span></div>
+        </div>
+      </div>
+
+      <div class="result-area" id="sizeExtra">
+        <div class="mini-stats">
+          <div class="mini-stat">
+            <span class="ms-label">Risk/Share</span>
+            <span class="ms-val red"  id="outRPS">—</span>
+          </div>
+          <div class="mini-stat">
+            <span class="ms-label">Actual 1R</span>
+            <span class="ms-val green" id="outActual">—</span>
+          </div>
         </div>
 
+        <div class="rr-section-label">Target Prices (R:R)</div>
+        <div class="rr-strip">
+          <div class="rr-cell">
+            <div class="rc-ratio">1:1</div>
+            <div class="rc-price" id="t1">—</div>
+            <div class="rc-profit" id="p1">—</div>
+          </div>
+          <div class="rr-cell">
+            <div class="rc-ratio">1:2</div>
+            <div class="rc-price" id="t2">—</div>
+            <div class="rc-profit" id="p2">—</div>
+          </div>
+          <div class="rr-cell">
+            <div class="rc-ratio">1:3</div>
+            <div class="rc-price" id="t3">—</div>
+            <div class="rc-profit" id="p3">—</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ══ CHECK TAB ══ -->
+    <div class="tab-pane" id="tab-check">
+
+      <div class="input-strip">
+        <div class="field">
+          <label>Entry 入場</label>
+          <div class="input-wrap">
+            <span class="pfx">$</span>
+            <input type="number" id="fxEntry" placeholder="10.00" min="0.01" step="0.01"
+                   oninput="autoCalcFixed()" tabindex="1">
+          </div>
+        </div>
+        <div class="field">
+          <label>Stop 止損</label>
+          <div class="input-wrap">
+            <span class="pfx">$</span>
+            <input type="number" id="fxStop" placeholder="9.50" min="0.01" step="0.01"
+                   oninput="autoCalcFixed()" tabindex="2">
+          </div>
+        </div>
+        <div class="field">
+          <label>Shares 股數</label>
+          <div class="input-wrap">
+            <span class="pfx">#</span>
+            <input type="number" id="fxShares" placeholder="1000" min="1" step="100"
+                   oninput="autoCalcFixed()" tabindex="3" style="padding-left:22px">
+          </div>
+        </div>
+      </div>
+
+      <div class="err-msg" id="fxErrMsg"></div>
+
+      <div class="result-area" id="fxResults">
+        <div class="check-hero">
+          <div class="check-box risk">
+            <div class="cb-label">實際風險 (1R)</div>
+            <div class="cb-num" id="fxTotalRisk">—</div>
+            <div class="cb-sub" id="fxRPS">每股 —</div>
+          </div>
+          <div class="check-box cap">
+            <div class="cb-label">動用資金</div>
+            <div class="cb-num" id="fxCapital">—</div>
+            <div class="cb-sub" id="fxStopPct">止損 —%</div>
+          </div>
+        </div>
+
+        <div class="verdict" id="fxVerdict">
+          <span class="verdict-icon" id="fxIcon">—</span>
+          <span id="fxVerdictText">—</span>
+        </div>
+
+        <div class="rr-section-label">Target Prices</div>
+        <div class="rr-strip" style="margin-bottom:10px">
+          <div class="rr-cell-amber">
+            <div class="rc-ratio">1:1</div>
+            <div class="rc-price" id="fxT1">—</div>
+            <div class="rc-profit" id="fxP1">—</div>
+          </div>
+          <div class="rr-cell-amber">
+            <div class="rc-ratio">1:2</div>
+            <div class="rc-price" id="fxT2">—</div>
+            <div class="rc-profit" id="fxP2">—</div>
+          </div>
+          <div class="rr-cell-amber">
+            <div class="rc-ratio">1:3</div>
+            <div class="rc-price" id="fxT3">—</div>
+            <div class="rc-profit" id="fxP3">—</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ══ LEARN TAB ══ -->
+    <div class="tab-pane" id="tab-learn">
+
+      <!-- Danger demo -->
+      <div class="learn-section">
+        <div class="section-title red">固定股數的危險</div>
         <div class="danger-inputs">
           <div class="field">
-            <label>Entry Price 入場價</label>
+            <label>Entry 入場</label>
             <div class="input-wrap">
               <span class="pfx">$</span>
               <input type="number" id="dEntry" placeholder="10.00" min="0.01" step="0.01" oninput="updateDanger()">
             </div>
           </div>
           <div class="field">
-            <label>固定股數 Fixed Shares</label>
+            <label>Fixed Shares 固定股數</label>
             <div class="input-wrap">
               <span class="pfx">#</span>
-              <input type="number" id="dShares" placeholder="1000" min="1" step="100" oninput="updateDanger()" style="padding-left:2rem">
+              <input type="number" id="dShares" placeholder="1000" min="1" step="100" oninput="updateDanger()" style="padding-left:22px">
             </div>
           </div>
         </div>
@@ -930,225 +828,129 @@
         <table>
           <thead>
             <tr>
-              <th>止損位 Stop</th>
-              <th>每股風險</th>
-              <th>總虧損 (1R)</th>
+              <th>止損位</th>
+              <th>R/Share</th>
+              <th>總虧損</th>
               <th>風險</th>
             </tr>
           </thead>
           <tbody id="dangerBody"></tbody>
         </table>
 
-        <div class="risk-range-note" id="rangeNote">
-          ⚠ 同樣股數，止損距離不同，虧損可差距 <strong id="riskRangeSpan">—</strong>。這就是風控失控。
+        <div class="risk-note">
+          ⚠ 同樣股數，不同止損距離，虧損差距 <strong id="riskRangeSpan">—</strong>。這就是風控失控。
+        </div>
+      </div>
+
+      <!-- Mindset -->
+      <div class="learn-section">
+        <div class="section-title blue">核心心法</div>
+        <div class="mindset-grid">
+          <div class="mbox mbox-wrong">
+            <div class="mbox-tag">❌ 錯誤</div>
+            <div class="mbox-text">「我看好這隻，<em>買 1000 股</em>吧。」</div>
+            <div class="mbox-sub">風險未知 → 情緒失控 → 大虧</div>
+          </div>
+          <div class="mbox mbox-right">
+            <div class="mbox-tag">✅ 正確</div>
+            <div class="mbox-text">「最多虧 $200，止損 $0.50，<em>400 股</em>。」</div>
+            <div class="mbox-sub">風險鎖死 → 情緒穩定 → 持續賺</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Traps -->
+      <div class="learn-section">
+        <div class="section-title amber">兩個致命陷阱</div>
+        <div class="traps-grid">
+          <div class="trap-item">
+            <div class="trap-num">01</div>
+            <div class="trap-title">風險失控</div>
+            <div class="trap-text">固定 1000 股，止損遠一點就虧千幾。連停損兩次直接觸發報復式交易。</div>
+          </div>
+          <div class="trap-item">
+            <div class="trap-num">02</div>
+            <div class="trap-title">被 Noise 洗出場</div>
+            <div class="trap-text">怕虧就把止損硬壓緊，結果被輕微震盪掃走，方向對了卻賠錢。</div>
+          </div>
         </div>
       </div>
 
     </div>
 
-    <!-- ===== FIXED SHARES SCENARIO ===== -->
-    <div class="card amber-accent" style="margin-bottom:1.25rem">
-      <div class="card-label">
-        <span class="dot dot-amber"></span>
-        我就是要買 X 股 — 場景分析 (Fixed Shares Scenario)
-      </div>
+  </div><!-- /content -->
 
-      <div class="formula-bar">
-        <span style="color:var(--amber);font-weight:600">總風險</span>
-        <span class="eq">=</span>
-        <span style="color:var(--amber);font-weight:600">固定股數</span>
-        <span class="op">×</span>
-        <span style="color:var(--amber);font-weight:600">(Entry − Stop)</span>
-        <span class="op" style="margin-left:0.5rem">·</span>
-        <span style="color:var(--text-muted);font-size:0.78rem">輸入你想買的股數，看清楚你實際承擔多少風險</span>
-      </div>
-
-      <div class="fx-input-row">
-        <div class="field">
-          <label>Entry Price 入場價</label>
-          <div class="input-wrap">
-            <span class="pfx">$</span>
-            <input type="number" id="fxEntry" placeholder="10.00" min="0.01" step="0.01">
-          </div>
-        </div>
-        <div class="field">
-          <label>Stop Loss 止損價</label>
-          <div class="input-wrap">
-            <span class="pfx">$</span>
-            <input type="number" id="fxStop" placeholder="9.50" min="0.01" step="0.01">
-          </div>
-        </div>
-        <div class="field">
-          <label>我要買的股數 Shares</label>
-          <div class="input-wrap">
-            <span class="pfx">#</span>
-            <input type="number" id="fxShares" placeholder="1000" min="1" step="100" style="padding-left:2rem">
-          </div>
-        </div>
-      </div>
-
-      <button class="btn-calc-amber" onclick="calcFixed()">分析我的場景 →</button>
-
-      <div class="err-msg" id="fxErrMsg"></div>
-
-      <div class="fx-results" id="fxResults">
-        <div class="divider"></div>
-
-        <!-- Risk + Capital heroes -->
-        <div class="fx-hero">
-          <div class="fx-hero-box risk-box">
-            <div class="fhb-label">⚠ 我的實際總風險 (1R)</div>
-            <div class="fhb-num" id="fxTotalRisk">—</div>
-            <div class="fhb-sub" id="fxRPS">每股風險 —</div>
-          </div>
-          <div class="fx-hero-box cap-box">
-            <div class="fhb-label">動用資金 Capital</div>
-            <div class="fhb-num" id="fxCapital">—</div>
-            <div class="fhb-sub" id="fxStopPct">止損距離 —%</div>
-          </div>
-        </div>
-
-        <!-- Meta stats -->
-        <div class="fx-meta">
-          <div class="stat-box">
-            <div class="sb-label">買入股數</div>
-            <div class="sb-val" id="fxSharesOut">—</div>
-          </div>
-          <div class="stat-box blue-box">
-            <div class="sb-label">每股風險 R/Share</div>
-            <div class="sb-val" id="fxRPSOut">—</div>
-          </div>
-          <div class="stat-box">
-            <div class="sb-label">需要 1:2 目標才保本</div>
-            <div class="sb-val" id="fxMinTarget">—</div>
-          </div>
-        </div>
-
-        <!-- RR Targets -->
-        <div class="rr-label">獲利目標 Target Prices — 基於你實際承擔的風險</div>
-        <div class="rr-row-amber">
-          <div class="rr-cell-amber">
-            <div class="rc-ratio">1:1 R/R</div>
-            <div class="rc-price" id="fxT1">—</div>
-            <div class="rc-profit" id="fxP1">—</div>
-          </div>
-          <div class="rr-cell-amber">
-            <div class="rc-ratio">1:2 R/R</div>
-            <div class="rc-price" id="fxT2">—</div>
-            <div class="rc-profit" id="fxP2">—</div>
-          </div>
-          <div class="rr-cell-amber">
-            <div class="rc-ratio">1:3 R/R</div>
-            <div class="rc-price" id="fxT3">—</div>
-            <div class="rc-profit" id="fxP3">—</div>
-          </div>
-        </div>
-
-        <!-- Risk verdict -->
-        <div class="risk-verdict" id="fxVerdict">
-          <span class="rv-icon">—</span>
-          <span id="fxVerdictText">—</span>
-        </div>
-      </div>
-    </div>
-
-    <!-- ===== TRAPS SECTION ===== -->
-    <div class="card" style="margin-bottom:1.25rem">
-      <div class="card-label">
-        <span class="dot dot-amber"></span>
-        固定股數的兩個致命陷阱
-      </div>
-      <div class="traps-grid">
-        <div class="trap-item">
-          <div class="trap-num">01</div>
-          <div class="trap-title">風險失控 — 一筆就重傷</div>
-          <div class="trap-text">做 $10 的股票固定買 1000 股，止損在 $9.00，這筆就虧 $1,000。連停損兩次就噴掉 $2,000，瞬間觸發報復式交易。</div>
-        </div>
-        <div class="trap-item">
-          <div class="trap-num">02</div>
-          <div class="trap-title">被迫設超緊止損 — 被 Noise 洗出場</div>
-          <div class="trap-text">因為怕虧，把止損硬設在 $9.90（只給 $0.10 空間）。股票稍微震盪就把你洗出場，然後頭也不回往上漲。方向對了，卻因部位太大賠錢。</div>
-        </div>
-      </div>
-    </div>
-
-    <!-- ===== MINDSET ===== -->
-    <div class="card blue-accent" style="margin-bottom:1.25rem">
-      <div class="card-label">
-        <span class="dot dot-blue"></span>
-        核心心法 — 專業 Trader 的思維方式
-      </div>
-      <div class="mindset-row">
-        <div class="mbox mbox-wrong">
-          <div class="mbox-tag">❌ 錯誤思維</div>
-          <div class="mbox-text">「我看好這隻 $10 的股票，<em>買 1000 股</em>吧。希望它不要跌太多。」</div>
-          <div class="mbox-sub">風險未知 → 情緒失控 → 報復式交易 → 大虧</div>
-        </div>
-        <div class="vs-badge">VS</div>
-        <div class="mbox mbox-right">
-          <div class="mbox-tag">✅ 正確思維</div>
-          <div class="mbox-text">「支撐位在 $9.50，最多虧 $200。所以只能買：<em>$200 ÷ $0.50 = 400 股</em>。」</div>
-          <div class="mbox-sub">風險鎖死 → 情緒穩定 → 活下去才能持續賺</div>
-        </div>
-      </div>
-    </div>
-
-    <footer>Position Sizing Calculator · For Educational Purposes Only · Not Financial Advice</footer>
-
-  </div>
-
-  <!-- ===== JAVASCRIPT ===== -->
   <script>
-    /* ── helpers ── */
     const $ = id => document.getElementById(id);
 
     function fmt(n, d = 2) {
       return '$' + n.toFixed(d).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
     }
 
-    function fmtN(n) {
-      return n.toLocaleString();
+    /* ── Tab switch ── */
+    function switchTab(name) {
+      document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      $('tab-' + name).classList.add('active');
+      document.querySelector('.' + name + '-tab').classList.add('active');
+      if (name === 'size') { setTimeout(() => $('entry').focus(), 50); }
+      if (name === 'check') { setTimeout(() => $('fxEntry').focus(), 50); }
     }
 
-    /* ── main calculator ── */
-    function calculate() {
+    /* ── Preset buttons ── */
+    function setRisk(val) {
+      $('risk').value = val;
+      updatePresetActive();
+      autoCalc();
+    }
+
+    function updatePresetActive() {
+      const v = parseFloat($('risk').value);
+      ['100','200','300','500','1000'].forEach(k => {
+        const el = $('p' + k);
+        if (el) el.classList.toggle('active', v === parseFloat(k));
+      });
+    }
+
+    /* ── Size calculator (auto) ── */
+    function autoCalc() {
       const entry  = parseFloat($('entry').value);
       const stop   = parseFloat($('stop').value);
       const maxRsk = parseFloat($('risk').value);
       const err    = $('errMsg');
-      const res    = $('results');
+      const hero   = $('sizeHero');
+      const extra  = $('sizeExtra');
 
       err.style.display = 'none';
-      ['entry','stop','risk'].forEach(id => $(id).classList.remove('error'));
+      ['entry','stop','risk'].forEach(id => $(id).classList.remove('error','ok'));
 
-      let hasErr = false;
-
-      if (!entry || entry <= 0)  { $('entry').classList.add('error'); hasErr = true; }
-      if (!stop  || stop  <= 0)  { $('stop').classList.add('error');  hasErr = true; }
-      if (!maxRsk|| maxRsk<= 0)  { $('risk').classList.add('error');  hasErr = true; }
-
-      if (hasErr) {
-        err.textContent = '請填入所有欄位，數值必須大於 0';
-        err.style.display = 'block';
-        res.classList.remove('show');
+      // Need all 3 values
+      if (!entry || !stop || !maxRsk) {
+        hero.className = 'result-hero empty';
+        $('outShares').textContent = '—';
+        $('outCap').textContent = '—';
+        $('outStopPct').textContent = '—';
+        extra.classList.remove('show');
         return;
       }
 
       if (stop >= entry) {
         $('stop').classList.add('error');
-        err.textContent = '止損價必須低於入場價 (Stop < Entry)';
+        err.textContent = 'Stop < Entry';
         err.style.display = 'block';
-        res.classList.remove('show');
+        hero.className = 'result-hero empty';
+        extra.classList.remove('show');
         return;
       }
 
-      const rps    = entry - stop;            // risk per share
+      const rps    = entry - stop;
       const shares = Math.floor(maxRsk / rps);
 
       if (shares < 1) {
-        err.textContent = '風險設定太小，無法買入任何股數。請提高 Max Risk 或縮小止損距離。';
+        err.textContent = '1R 太小，無法計算。請提高 Max Risk 或縮小止損。';
         err.style.display = 'block';
-        res.classList.remove('show');
+        hero.className = 'result-hero empty';
+        extra.classList.remove('show');
         return;
       }
 
@@ -1156,11 +958,14 @@
       const actualRsk = shares * rps;
       const stopPct   = (rps / entry * 100).toFixed(2);
 
-      $('outShares').textContent  = fmtN(shares);
-      $('outRPS').textContent     = fmt(rps);
+      ['entry','stop','risk'].forEach(id => $(id).classList.add('ok'));
+
+      hero.className = 'result-hero anim';
+      $('outShares').textContent  = shares.toLocaleString();
       $('outCap').textContent     = fmt(capital);
-      $('outActual').textContent  = fmt(actualRsk);
       $('outStopPct').textContent = stopPct + '%';
+      $('outRPS').textContent     = fmt(rps);
+      $('outActual').textContent  = fmt(actualRsk);
 
       const t1p = entry + rps;
       const t2p = entry + rps * 2;
@@ -1170,19 +975,73 @@
       $('t2').textContent = fmt(t2p);  $('p2').textContent = '+' + fmt(actualRsk * 2);
       $('t3').textContent = fmt(t3p);  $('p3').textContent = '+' + fmt(actualRsk * 3);
 
-      res.classList.remove('show');
-      // force reflow for re-animation
-      void res.offsetWidth;
-      res.classList.add('show');
+      if (!extra.classList.contains('show')) {
+        extra.classList.add('show', 'anim');
+      }
     }
 
-    /* ── danger table ── */
+    /* ── Fixed shares scenario (auto) ── */
+    function autoCalcFixed() {
+      const entry  = parseFloat($('fxEntry').value);
+      const stop   = parseFloat($('fxStop').value);
+      const shares = parseInt($('fxShares').value);
+      const err    = $('fxErrMsg');
+      const res    = $('fxResults');
+
+      err.style.display = 'none';
+      ['fxEntry','fxStop','fxShares'].forEach(id => $(id).classList.remove('error','ok'));
+
+      if (!entry || !stop || !shares) { res.classList.remove('show'); return; }
+
+      if (stop >= entry) {
+        $('fxStop').classList.add('error');
+        err.textContent = 'Stop < Entry';
+        err.style.display = 'block';
+        res.classList.remove('show');
+        return;
+      }
+
+      const rps       = entry - stop;
+      const totalRisk = shares * rps;
+      const capital   = shares * entry;
+      const stopPct   = (rps / entry * 100).toFixed(2);
+
+      $('fxTotalRisk').textContent = fmt(totalRisk);
+      $('fxRPS').textContent       = '每股 ' + fmt(rps);
+      $('fxCapital').textContent   = fmt(capital);
+      $('fxStopPct').textContent   = '止損 ' + stopPct + '%';
+
+      const t1 = entry + rps, t2 = entry + rps * 2, t3 = entry + rps * 3;
+      $('fxT1').textContent = fmt(t1);  $('fxP1').textContent = '+' + fmt(totalRisk);
+      $('fxT2').textContent = fmt(t2);  $('fxP2').textContent = '+' + fmt(totalRisk * 2);
+      $('fxT3').textContent = fmt(t3);  $('fxP3').textContent = '+' + fmt(totalRisk * 3);
+
+      const verdict = $('fxVerdict');
+      verdict.className = 'verdict show anim';
+      if (totalRisk <= 150) {
+        verdict.classList.add('safe');
+        $('fxIcon').textContent = '✅';
+        $('fxVerdictText').textContent = `風險合理！止損虧 ${fmt(totalRisk)}，情緒應可保持穩定。`;
+      } else if (totalRisk <= 400) {
+        verdict.classList.add('warn');
+        $('fxIcon').textContent = '⚠️';
+        $('fxVerdictText').textContent = `中等風險。止損虧 ${fmt(totalRisk)}，確認不會觸發報復式交易。`;
+      } else {
+        verdict.classList.add('danger');
+        $('fxIcon').textContent = '🚨';
+        $('fxVerdictText').textContent = `風險過高！止損虧 ${fmt(totalRisk)}。連兩次 = ${fmt(totalRisk * 2)}。建議減股數。`;
+      }
+
+      res.classList.add('show', 'anim');
+    }
+
+    /* ── Danger table ── */
     const STOP_OFFSETS = [
-      { label: '極緊',   pct: 0.01 },
-      { label: '很緊',   pct: 0.02 },
-      { label: '一般',   pct: 0.05 },
-      { label: '合理',   pct: 0.08 },
-      { label: '較寬',   pct: 0.12 },
+      { label: '極緊', pct: 0.01 },
+      { label: '很緊', pct: 0.02 },
+      { label: '一般', pct: 0.05 },
+      { label: '合理', pct: 0.08 },
+      { label: '較寬', pct: 0.12 },
     ];
 
     function riskClass(r) {
@@ -1203,9 +1062,7 @@
       const shares = parseInt($('dShares').value)   || 1000;
       const tbody  = $('dangerBody');
       tbody.innerHTML = '';
-
       let minR = Infinity, maxR = -Infinity;
-
       STOP_OFFSETS.forEach(({ label, pct }) => {
         const rps   = +(entry * pct).toFixed(2);
         const stop  = +(entry - rps).toFixed(2);
@@ -1213,111 +1070,35 @@
         const totalR = shares * rps;
         if (totalR < minR) minR = totalR;
         if (totalR > maxR) maxR = totalR;
-
         const { cls, label: rl } = riskClass(totalR);
-
         const tr = document.createElement('tr');
         tr.innerHTML = `
-          <td style="color:var(--text)">${fmt(stop)} <span style="font-size:0.65rem;color:var(--text-muted)">(${label})</span></td>
+          <td style="color:var(--text)">${fmt(stop)} <span style="font-size:9px;color:var(--text-muted)">(${label})</span></td>
           <td style="color:var(--text-muted)">${fmt(rps)}</td>
           <td style="color:${riskColor(totalR)};font-weight:600">${fmt(totalR, 0)}</td>
           <td><span class="pill ${cls}">${rl}</span></td>
         `;
         tbody.appendChild(tr);
       });
-
       if (maxR > -Infinity) {
         $('riskRangeSpan').textContent = fmt(minR, 0) + ' ~ ' + fmt(maxR, 0);
       }
     }
 
-    /* ── fixed shares scenario ── */
-    function calcFixed() {
-      const entry  = parseFloat($('fxEntry').value);
-      const stop   = parseFloat($('fxStop').value);
-      const shares = parseInt($('fxShares').value);
-      const err    = $('fxErrMsg');
-      const res    = $('fxResults');
-
-      err.style.display = 'none';
-      ['fxEntry','fxStop','fxShares'].forEach(id => $(id).classList.remove('error'));
-
-      let hasErr = false;
-      if (!entry  || entry  <= 0) { $('fxEntry').classList.add('error');  hasErr = true; }
-      if (!stop   || stop   <= 0) { $('fxStop').classList.add('error');   hasErr = true; }
-      if (!shares || shares <  1) { $('fxShares').classList.add('error'); hasErr = true; }
-
-      if (hasErr) {
-        err.textContent = '請填入所有欄位，數值必須大於 0';
-        err.style.display = 'block';
-        res.classList.remove('show');
-        return;
+    /* ── Keyboard ── */
+    document.addEventListener('keydown', e => {
+      if (e.key === 'Escape') {
+        // clear active tab inputs
+        const active = document.querySelector('.tab-pane.active');
+        if (active) active.querySelectorAll('input').forEach(i => i.value = '');
+        autoCalc();
+        autoCalcFixed();
       }
-
-      if (stop >= entry) {
-        $('fxStop').classList.add('error');
-        err.textContent = '止損價必須低於入場價 (Stop < Entry)';
-        err.style.display = 'block';
-        res.classList.remove('show');
-        return;
-      }
-
-      const rps       = entry - stop;
-      const totalRisk = shares * rps;
-      const capital   = shares * entry;
-      const stopPct   = (rps / entry * 100).toFixed(2);
-
-      const t1 = entry + rps;
-      const t2 = entry + rps * 2;
-      const t3 = entry + rps * 3;
-
-      $('fxTotalRisk').textContent = fmt(totalRisk);
-      $('fxRPS').textContent       = '每股風險 ' + fmt(rps);
-      $('fxCapital').textContent   = fmt(capital);
-      $('fxStopPct').textContent   = '止損距離 ' + stopPct + '%';
-      $('fxSharesOut').textContent = shares.toLocaleString() + ' 股';
-      $('fxRPSOut').textContent    = fmt(rps);
-      $('fxMinTarget').textContent = fmt(t2);
-
-      $('fxT1').textContent = fmt(t1);  $('fxP1').textContent = '+' + fmt(totalRisk);
-      $('fxT2').textContent = fmt(t2);  $('fxP2').textContent = '+' + fmt(totalRisk * 2);
-      $('fxT3').textContent = fmt(t3);  $('fxP3').textContent = '+' + fmt(totalRisk * 3);
-
-      // Risk verdict
-      const verdict = $('fxVerdict');
-      const vText   = $('fxVerdictText');
-      verdict.className = 'risk-verdict';
-
-      if (totalRisk <= 150) {
-        verdict.classList.add('safe');
-        verdict.querySelector('.rv-icon').textContent = '✅';
-        vText.textContent = `風險合理！這筆虧損 ${fmt(totalRisk)} 在可接受範圍內。停損後情緒應該能保持穩定。`;
-      } else if (totalRisk <= 400) {
-        verdict.classList.add('warn');
-        verdict.querySelector('.rv-icon').textContent = '⚠️';
-        vText.textContent = `中等風險。這筆若停損虧 ${fmt(totalRisk)}，請確認你能心理接受，不會觸發報復式交易。`;
-      } else {
-        verdict.classList.add('danger');
-        verdict.querySelector('.rv-icon').textContent = '🚨';
-        vText.textContent = `風險過高！若被止損出場，你將虧 ${fmt(totalRisk)}。連續兩次停損 = ${fmt(totalRisk * 2)}。強烈建議減少股數。`;
-      }
-
-      res.classList.remove('show');
-      void res.offsetWidth;
-      res.classList.add('show');
-    }
-
-    /* ── keyboard shortcuts ── */
-    document.querySelectorAll('#entry, #stop, #risk').forEach(el => {
-      el.addEventListener('keydown', e => { if (e.key === 'Enter') calculate(); });
     });
 
-    document.querySelectorAll('#fxEntry, #fxStop, #fxShares').forEach(el => {
-      el.addEventListener('keydown', e => { if (e.key === 'Enter') calcFixed(); });
-    });
-
-    /* ── init ── */
+    /* ── Init ── */
     updateDanger();
+    setTimeout(() => $('entry').focus(), 100);
   </script>
 </body>
 </html>
