@@ -808,7 +808,7 @@
       <!-- Danger demo -->
       <div class="learn-section">
         <div class="section-title red">固定股數的危險</div>
-        <div class="danger-inputs" style="grid-template-columns:1fr 1fr 1fr">
+        <div class="danger-inputs" style="grid-template-columns:1fr 1fr">
           <div class="field">
             <label>Entry 入場</label>
             <div class="input-wrap">
@@ -824,7 +824,14 @@
             </div>
           </div>
           <div class="field">
-            <label>Fixed Shares 固定股數</label>
+            <label>Max Risk 1R <span style="color:var(--text-dim);font-size:9px">（留空則用固定股數）</span></label>
+            <div class="input-wrap">
+              <span class="pfx">$</span>
+              <input type="number" id="dRisk" placeholder="200" min="1" step="10" oninput="updateDanger()">
+            </div>
+          </div>
+          <div class="field">
+            <label>Fixed Shares <span style="color:var(--text-dim);font-size:9px">（留空則用 1R）</span></label>
             <div class="input-wrap">
               <span class="pfx">#</span>
               <input type="number" id="dShares" placeholder="1000" min="1" step="100" oninput="updateDanger()" style="padding-left:22px">
@@ -909,9 +916,10 @@
 
     /* ── Cross-tab sync ── */
     function syncFromSize() {
-      const e = $('entry').value, s = $('stop').value;
+      const e = $('entry').value, s = $('stop').value, r = $('risk').value;
       if (e) { $('fxEntry').value = e; $('dEntry').value = e; }
       if (s) { $('fxStop').value = s; $('dStop').value = s; }
+      if (r) { $('dRisk').value = r; }
       autoCalcFixed();
       updateDanger();
     }
@@ -1108,36 +1116,72 @@
     }
 
     function updateDanger() {
-      const entry      = parseFloat($('dEntry').value)  || 10;
+      const entry      = parseFloat($('dEntry').value);
       const actualStop = parseFloat($('dStop').value);
-      const shares     = parseInt($('dShares').value)   || 1000;
-      const tbody      = $('dangerBody');
-      tbody.innerHTML  = '';
+      const maxRisk    = parseFloat($('dRisk').value);
+      const fixShares  = parseInt($('dShares').value);
+
+      const baseEntry = entry || 10;
+      const tbody = $('dangerBody');
+      tbody.innerHTML = '';
       let minR = Infinity, maxR = -Infinity;
 
-      // Actual stop row (highlighted) if provided
-      if (actualStop && actualStop > 0 && actualStop < entry) {
-        const rps    = +(entry - actualStop).toFixed(4);
-        const totalR = shares * rps;
-        const stopPct = (rps / entry * 100).toFixed(1);
-        if (totalR < minR) minR = totalR;
-        if (totalR > maxR) maxR = totalR;
-        tbody.appendChild(makeDangerRow(entry, actualStop, rps, totalR, `你的止損 ${stopPct}%`, true));
+      // Determine shares to use: prefer 1R calculation, fall back to fixed shares, fall back to 1000
+      let shares;
+      if (actualStop && actualStop > 0 && actualStop < baseEntry && maxRisk > 0) {
+        const rps = baseEntry - actualStop;
+        shares = Math.max(1, Math.floor(maxRisk / rps));
+      } else {
+        shares = fixShares || 1000;
       }
 
-      STOP_OFFSETS.forEach(({ label, pct }) => {
-        const rps    = +(entry * pct).toFixed(2);
-        const stop   = +(entry - rps).toFixed(2);
-        if (stop <= 0) return;
-        // Skip if very close to actual stop
-        if (actualStop && Math.abs(stop - actualStop) < 0.01) return;
-        const totalR = shares * rps;
+      // Show 1R-calculated row (green) if both stop and 1R are filled
+      if (actualStop && actualStop > 0 && actualStop < baseEntry && maxRisk > 0) {
+        const rps     = +(baseEntry - actualStop).toFixed(4);
+        const calcSh  = Math.max(1, Math.floor(maxRisk / rps));
+        const totalR  = calcSh * rps;
+        const stopPct = (rps / baseEntry * 100).toFixed(1);
+        const tr = document.createElement('tr');
+        tr.style.cssText = 'background:rgba(14,201,127,0.07);outline:1px solid rgba(14,201,127,0.2)';
+        const t1 = baseEntry + rps, t2 = baseEntry + rps * 2;
+        tr.innerHTML = `
+          <td style="color:var(--text)">${fmt(actualStop)} <span style="font-size:9px;color:var(--green)">✓ 1R (${stopPct}%)</span></td>
+          <td style="color:var(--text-muted)">${fmt(rps)}</td>
+          <td style="color:var(--green);font-weight:700">${fmt(totalR, 0)} <span style="font-size:9px;color:rgba(14,201,127,0.6)">(${calcSh} 股)</span></td>
+          <td><span style="color:var(--text);font-weight:600">${fmt(t1)}</span> <span style="color:var(--green);font-size:10px">+${fmt(totalR,0)}</span></td>
+          <td><span style="color:var(--text);font-weight:600">${fmt(t2)}</span> <span style="color:var(--green);font-size:10px">+${fmt(totalR*2,0)}</span></td>
+          <td><span class="pill pill-low">安全</span></td>
+        `;
+        tbody.appendChild(tr);
         if (totalR < minR) minR = totalR;
         if (totalR > maxR) maxR = totalR;
-        tbody.appendChild(makeDangerRow(entry, stop, rps, totalR, label, false));
-      });
+      }
 
-      if (maxR > -Infinity) {
+      // Actual stop row (blue) if stop filled but using fixed shares
+      if (actualStop && actualStop > 0 && actualStop < baseEntry && !maxRisk && fixShares) {
+        const rps    = +(baseEntry - actualStop).toFixed(4);
+        const totalR = fixShares * rps;
+        const stopPct = (rps / baseEntry * 100).toFixed(1);
+        if (totalR < minR) minR = totalR;
+        if (totalR > maxR) maxR = totalR;
+        tbody.appendChild(makeDangerRow(baseEntry, actualStop, rps, totalR, `你的止損 ${stopPct}%`, true));
+      }
+
+      // Scenario rows using shares (only if no 1R calc, to show danger)
+      if (!maxRisk) {
+        STOP_OFFSETS.forEach(({ label, pct }) => {
+          const rps  = +(baseEntry * pct).toFixed(2);
+          const stop = +(baseEntry - rps).toFixed(2);
+          if (stop <= 0) return;
+          if (actualStop && Math.abs(stop - actualStop) < 0.01) return;
+          const totalR = shares * rps;
+          if (totalR < minR) minR = totalR;
+          if (totalR > maxR) maxR = totalR;
+          tbody.appendChild(makeDangerRow(baseEntry, stop, rps, totalR, label, false));
+        });
+      }
+
+      if (maxR > -Infinity && minR !== maxR) {
         $('riskRangeSpan').textContent = fmt(minR, 0) + ' ~ ' + fmt(maxR, 0);
       }
     }
