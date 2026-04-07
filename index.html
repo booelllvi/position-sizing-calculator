@@ -808,12 +808,19 @@
       <!-- Danger demo -->
       <div class="learn-section">
         <div class="section-title red">固定股數的危險</div>
-        <div class="danger-inputs">
+        <div class="danger-inputs" style="grid-template-columns:1fr 1fr 1fr">
           <div class="field">
             <label>Entry 入場</label>
             <div class="input-wrap">
               <span class="pfx">$</span>
               <input type="number" id="dEntry" placeholder="10.00" min="0.01" step="0.01" oninput="updateDanger()">
+            </div>
+          </div>
+          <div class="field">
+            <label>Stop 止損</label>
+            <div class="input-wrap">
+              <span class="pfx">$</span>
+              <input type="number" id="dStop" placeholder="9.50" min="0.01" step="0.01" oninput="updateDanger()">
             </div>
           </div>
           <div class="field">
@@ -903,7 +910,7 @@
     function syncFromSize() {
       const e = $('entry').value, s = $('stop').value;
       if (e) { $('fxEntry').value = e; $('dEntry').value = e; }
-      if (s) { $('fxStop').value  = s; }
+      if (s) { $('fxStop').value = s; $('dStop').value = s; }
       autoCalcFixed();
       updateDanger();
     }
@@ -911,7 +918,7 @@
     function syncFromCheck() {
       const e = $('fxEntry').value, s = $('fxStop').value;
       if (e) { $('entry').value = e; $('dEntry').value = e; }
-      if (s) { $('stop').value  = s; }
+      if (s) { $('stop').value = s; $('dStop').value = s; }
       autoCalc();
       updateDanger();
     }
@@ -1076,33 +1083,51 @@
       return 'var(--red)';
     }
 
+    function makeDangerRow(stop, rps, totalR, label, highlight) {
+      const { cls, label: rl } = riskClass(totalR);
+      const tr = document.createElement('tr');
+      if (highlight) tr.style.cssText = 'background:rgba(79,142,247,0.08);outline:1px solid rgba(79,142,247,0.25)';
+      tr.innerHTML = `
+        <td style="color:var(--text)">${fmt(stop)} <span style="font-size:9px;color:${highlight?'var(--blue)':'var(--text-muted)'}">(${label})</span></td>
+        <td style="color:var(--text-muted)">${fmt(rps)}</td>
+        <td style="color:${riskColor(totalR)};font-weight:600">${fmt(totalR, 0)}</td>
+        <td style="color:var(--green);font-weight:600">+${fmt(totalR, 0)}</td>
+        <td style="color:var(--green);font-weight:600">+${fmt(totalR * 2, 0)}</td>
+        <td><span class="pill ${cls}">${rl}</span></td>
+      `;
+      return tr;
+    }
+
     function updateDanger() {
-      const entry  = parseFloat($('dEntry').value)  || 10;
-      const shares = parseInt($('dShares').value)   || 1000;
-      const tbody  = $('dangerBody');
-      tbody.innerHTML = '';
+      const entry      = parseFloat($('dEntry').value)  || 10;
+      const actualStop = parseFloat($('dStop').value);
+      const shares     = parseInt($('dShares').value)   || 1000;
+      const tbody      = $('dangerBody');
+      tbody.innerHTML  = '';
       let minR = Infinity, maxR = -Infinity;
+
+      // Actual stop row (highlighted) if provided
+      if (actualStop && actualStop > 0 && actualStop < entry) {
+        const rps    = +(entry - actualStop).toFixed(4);
+        const totalR = shares * rps;
+        const stopPct = (rps / entry * 100).toFixed(1);
+        if (totalR < minR) minR = totalR;
+        if (totalR > maxR) maxR = totalR;
+        tbody.appendChild(makeDangerRow(actualStop, rps, totalR, `你的止損 ${stopPct}%`, true));
+      }
+
       STOP_OFFSETS.forEach(({ label, pct }) => {
-        const rps   = +(entry * pct).toFixed(2);
-        const stop  = +(entry - rps).toFixed(2);
+        const rps    = +(entry * pct).toFixed(2);
+        const stop   = +(entry - rps).toFixed(2);
         if (stop <= 0) return;
+        // Skip if very close to actual stop
+        if (actualStop && Math.abs(stop - actualStop) < 0.01) return;
         const totalR = shares * rps;
         if (totalR < minR) minR = totalR;
         if (totalR > maxR) maxR = totalR;
-        const { cls, label: rl } = riskClass(totalR);
-        const win1 = totalR;
-        const win2 = totalR * 2;
-        const tr = document.createElement('tr');
-        tr.innerHTML = `
-          <td style="color:var(--text)">${fmt(stop)} <span style="font-size:9px;color:var(--text-muted)">(${label})</span></td>
-          <td style="color:var(--text-muted)">${fmt(rps)}</td>
-          <td style="color:${riskColor(totalR)};font-weight:600">${fmt(totalR, 0)}</td>
-          <td style="color:var(--green);font-weight:600">+${fmt(win1, 0)}</td>
-          <td style="color:var(--green);font-weight:600">+${fmt(win2, 0)}</td>
-          <td><span class="pill ${cls}">${rl}</span></td>
-        `;
-        tbody.appendChild(tr);
+        tbody.appendChild(makeDangerRow(stop, rps, totalR, label, false));
       });
+
       if (maxR > -Infinity) {
         $('riskRangeSpan').textContent = fmt(minR, 0) + ' ~ ' + fmt(maxR, 0);
       }
