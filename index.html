@@ -838,8 +838,8 @@
               <th>止損位</th>
               <th>R/Share</th>
               <th>總虧損</th>
-              <th>1R Win</th>
-              <th>2R Win</th>
+              <th>1R Price / Win</th>
+              <th>2R Price / Win</th>
               <th>風險</th>
             </tr>
           </thead>
@@ -1083,16 +1083,24 @@
       return 'var(--red)';
     }
 
-    function makeDangerRow(stop, rps, totalR, label, highlight) {
+    function makeDangerRow(entry, stop, rps, totalR, label, highlight) {
       const { cls, label: rl } = riskClass(totalR);
+      const t1 = entry + rps;
+      const t2 = entry + rps * 2;
       const tr = document.createElement('tr');
       if (highlight) tr.style.cssText = 'background:rgba(79,142,247,0.08);outline:1px solid rgba(79,142,247,0.25)';
       tr.innerHTML = `
         <td style="color:var(--text)">${fmt(stop)} <span style="font-size:9px;color:${highlight?'var(--blue)':'var(--text-muted)'}">(${label})</span></td>
         <td style="color:var(--text-muted)">${fmt(rps)}</td>
         <td style="color:${riskColor(totalR)};font-weight:600">${fmt(totalR, 0)}</td>
-        <td style="color:var(--green);font-weight:600">+${fmt(totalR, 0)}</td>
-        <td style="color:var(--green);font-weight:600">+${fmt(totalR * 2, 0)}</td>
+        <td>
+          <span style="color:var(--text);font-weight:600">${fmt(t1)}</span>
+          <span style="color:var(--green);font-size:10px"> +${fmt(totalR, 0)}</span>
+        </td>
+        <td>
+          <span style="color:var(--text);font-weight:600">${fmt(t2)}</span>
+          <span style="color:var(--green);font-size:10px"> +${fmt(totalR * 2, 0)}</span>
+        </td>
         <td><span class="pill ${cls}">${rl}</span></td>
       `;
       return tr;
@@ -1113,7 +1121,7 @@
         const stopPct = (rps / entry * 100).toFixed(1);
         if (totalR < minR) minR = totalR;
         if (totalR > maxR) maxR = totalR;
-        tbody.appendChild(makeDangerRow(actualStop, rps, totalR, `你的止損 ${stopPct}%`, true));
+        tbody.appendChild(makeDangerRow(entry, actualStop, rps, totalR, `你的止損 ${stopPct}%`, true));
       }
 
       STOP_OFFSETS.forEach(({ label, pct }) => {
@@ -1125,7 +1133,7 @@
         const totalR = shares * rps;
         if (totalR < minR) minR = totalR;
         if (totalR > maxR) maxR = totalR;
-        tbody.appendChild(makeDangerRow(stop, rps, totalR, label, false));
+        tbody.appendChild(makeDangerRow(entry, stop, rps, totalR, label, false));
       });
 
       if (maxR > -Infinity) {
