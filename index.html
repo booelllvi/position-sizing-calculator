@@ -650,7 +650,7 @@
           <div class="input-wrap">
             <span class="pfx">$</span>
             <input type="number" id="entry" placeholder="10.00" min="0.01" step="0.01"
-                   oninput="autoCalc()" tabindex="1">
+                   oninput="autoCalc(); syncFromSize()" tabindex="1">
           </div>
         </div>
         <div class="field">
@@ -658,7 +658,7 @@
           <div class="input-wrap">
             <span class="pfx">$</span>
             <input type="number" id="stop" placeholder="9.50" min="0.01" step="0.01"
-                   oninput="autoCalc()" tabindex="2">
+                   oninput="autoCalc(); syncFromSize()" tabindex="2">
           </div>
         </div>
         <div class="field">
@@ -738,7 +738,7 @@
           <div class="input-wrap">
             <span class="pfx">$</span>
             <input type="number" id="fxEntry" placeholder="10.00" min="0.01" step="0.01"
-                   oninput="autoCalcFixed()" tabindex="1">
+                   oninput="autoCalcFixed(); syncFromCheck()" tabindex="1">
           </div>
         </div>
         <div class="field">
@@ -746,7 +746,7 @@
           <div class="input-wrap">
             <span class="pfx">$</span>
             <input type="number" id="fxStop" placeholder="9.50" min="0.01" step="0.01"
-                   oninput="autoCalcFixed()" tabindex="2">
+                   oninput="autoCalcFixed(); syncFromCheck()" tabindex="2">
           </div>
         </div>
         <div class="field">
@@ -895,6 +895,23 @@
       document.querySelector('.' + name + '-tab').classList.add('active');
       if (name === 'size') { setTimeout(() => $('entry').focus(), 50); }
       if (name === 'check') { setTimeout(() => $('fxEntry').focus(), 50); }
+    }
+
+    /* ── Cross-tab sync ── */
+    function syncFromSize() {
+      const e = $('entry').value, s = $('stop').value;
+      if (e) { $('fxEntry').value = e; $('dEntry').value = e; }
+      if (s) { $('fxStop').value  = s; }
+      autoCalcFixed();
+      updateDanger();
+    }
+
+    function syncFromCheck() {
+      const e = $('fxEntry').value, s = $('fxStop').value;
+      if (e) { $('entry').value = e; $('dEntry').value = e; }
+      if (s) { $('stop').value  = s; }
+      autoCalc();
+      updateDanger();
     }
 
     /* ── Preset buttons ── */
