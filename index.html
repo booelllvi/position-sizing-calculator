@@ -632,9 +632,9 @@
   <div class="topbar">
     <div class="topbar-title"><span>PSC</span> · Position Sizing Calculator</div>
     <div class="tabs">
-      <button class="tab-btn size-tab active"  onclick="switchTab('size')">SIZE</button>
-      <button class="tab-btn check-tab"        onclick="switchTab('check')">CHECK</button>
-      <button class="tab-btn learn-tab"        onclick="switchTab('learn')">LEARN</button>
+      <button class="tab-btn learn-tab active" onclick="switchTab('learn')">PLAYBOOK</button>
+      <button class="tab-btn size-tab"         onclick="switchTab('size')">TRADE</button>
+      <button class="tab-btn check-tab"        onclick="switchTab('check')">AUDIT</button>
     </div>
   </div>
 
@@ -642,7 +642,7 @@
   <div class="content">
 
     <!-- ══ SIZE TAB ══ -->
-    <div class="tab-pane active" id="tab-size">
+    <div class="tab-pane" id="tab-size">
 
       <div class="input-strip">
         <div class="field">
@@ -803,7 +803,7 @@
     </div>
 
     <!-- ══ LEARN TAB ══ -->
-    <div class="tab-pane" id="tab-learn">
+    <div class="tab-pane active" id="tab-learn">
 
       <!-- Danger demo -->
       <div class="learn-section">
@@ -902,8 +902,9 @@
       document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
       $('tab-' + name).classList.add('active');
       document.querySelector('.' + name + '-tab').classList.add('active');
-      if (name === 'size') { setTimeout(() => $('entry').focus(), 50); }
+      if (name === 'size')  { setTimeout(() => $('entry').focus(),   50); }
       if (name === 'check') { setTimeout(() => $('fxEntry').focus(), 50); }
+      if (name === 'learn') { setTimeout(() => $('dEntry').focus(),  50); }
     }
 
     /* ── Cross-tab sync ── */
@@ -1154,7 +1155,7 @@
 
     /* ── Init ── */
     updateDanger();
-    setTimeout(() => $('entry').focus(), 100);
+    setTimeout(() => $('dEntry').focus(), 100);
   </script>
 </body>
 </html>
