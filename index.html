@@ -831,6 +831,8 @@
               <th>止損位</th>
               <th>R/Share</th>
               <th>總虧損</th>
+              <th>1R Win</th>
+              <th>2R Win</th>
               <th>風險</th>
             </tr>
           </thead>
@@ -1088,11 +1090,15 @@
         if (totalR < minR) minR = totalR;
         if (totalR > maxR) maxR = totalR;
         const { cls, label: rl } = riskClass(totalR);
+        const win1 = totalR;
+        const win2 = totalR * 2;
         const tr = document.createElement('tr');
         tr.innerHTML = `
           <td style="color:var(--text)">${fmt(stop)} <span style="font-size:9px;color:var(--text-muted)">(${label})</span></td>
           <td style="color:var(--text-muted)">${fmt(rps)}</td>
           <td style="color:${riskColor(totalR)};font-weight:600">${fmt(totalR, 0)}</td>
+          <td style="color:var(--green);font-weight:600">+${fmt(win1, 0)}</td>
+          <td style="color:var(--green);font-weight:600">+${fmt(win2, 0)}</td>
           <td><span class="pill ${cls}">${rl}</span></td>
         `;
         tbody.appendChild(tr);
