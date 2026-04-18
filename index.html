@@ -2,7 +2,7 @@
 <html lang="zh-TW">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no">
   <title>Position Sizing Calculator · 部位風控計算器</title>
   <link rel="icon" type="image/jpeg" href="favicon-art.jpeg">
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -38,10 +38,13 @@
       background: var(--bg);
       color: var(--text);
       font-family: var(--fb);
-      height: 100vh;
+      height: 100dvh;
       overflow: hidden;
       display: flex;
       flex-direction: column;
+      -webkit-tap-highlight-color: transparent;
+      padding-top: env(safe-area-inset-top);
+      padding-bottom: env(safe-area-inset-bottom);
     }
 
     body::before {
@@ -616,13 +619,103 @@
     }
     .anim { animation: fadeUp 0.2s ease both; }
 
+    /* ── SCROLL HINT ── */
+    .table-scroll-hint {
+      display: none;
+      font-family: var(--fm);
+      font-size: 10px;
+      color: var(--text-dim);
+      text-align: center;
+      padding: 4px 0;
+    }
+
     /* ── RESPONSIVE ── */
-    @media (max-width: 400px) {
-      .input-strip { grid-template-columns: 1fr 1fr; }
-      .presets { flex-wrap: wrap; }
+
+    /* Phone landscape + small tablets */
+    @media (max-width: 600px) {
+      .topbar { padding: 0 10px; height: 48px; gap: 8px; }
+      .topbar-title { font-size: 10px; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; min-width: 0; }
+
+      .tabs { gap: 0; flex-shrink: 0; }
+      .tab-btn {
+        font-size: 12px;
+        padding: 8px 14px;
+        min-height: 36px;
+      }
+
+      .content {
+        padding: 12px 10px calc(24px + env(safe-area-inset-bottom));
+        scroll-padding-bottom: 80px;
+      }
+
+      .input-strip {
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+      }
+      .input-strip .field:last-child {
+        grid-column: 1 / -1;
+      }
+
+      input[type="number"] {
+        padding: 12px 8px 12px 24px;
+        font-size: 16px; /* prevents iOS zoom */
+      }
+
+      .presets {
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+      .preset-btn {
+        padding: 8px 14px;
+        font-size: 12px;
+        min-height: 36px;
+      }
+
+      .result-hero { padding: 14px; flex-wrap: wrap; gap: 10px; }
+      .result-hero .rh-num { font-size: 2.6rem; }
+      .result-hero .rh-right { text-align: left; width: 100%; }
+
+      .rr-strip { gap: 6px; }
+      .rr-cell .rc-price, .rr-cell-amber .rc-price { font-size: 13px; }
+
+      .check-hero { grid-template-columns: 1fr; gap: 8px; }
+      .check-box .cb-num { font-size: 1.5rem; }
+
       .mini-stats { grid-template-columns: 1fr; }
       .mindset-grid { grid-template-columns: 1fr; }
       .traps-grid { grid-template-columns: 1fr; }
+
+      /* Danger table: horizontal scroll */
+      .learn-section table {
+        display: block;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        white-space: nowrap;
+      }
+      .learn-section thead,
+      .learn-section tbody { display: table; width: 100%; min-width: 580px; }
+      .learn-section thead th,
+      .learn-section tbody td { padding: 8px 6px; font-size: 11px; }
+
+      .danger-inputs {
+        grid-template-columns: 1fr 1fr !important;
+        gap: 10px;
+      }
+
+      .table-scroll-hint { display: block; }
+
+      .backend-grid { grid-template-columns: 1fr; }
+    }
+
+    /* Very small phones (SE, etc) */
+    @media (max-width: 380px) {
+      .input-strip { grid-template-columns: 1fr; }
+      .input-strip .field:last-child { grid-column: auto; }
+
+      .result-hero .rh-num { font-size: 2.2rem; }
+      .rr-strip { grid-template-columns: 1fr; gap: 6px; }
+
+      .tab-btn { padding: 8px 10px; font-size: 11px; }
     }
   </style>
 </head>
@@ -650,7 +743,7 @@
           <div class="input-wrap">
             <span class="pfx">$</span>
             <input type="number" id="entry" placeholder="10.00" min="0.01" step="0.01"
-                   oninput="autoCalc(); syncFromSize()" tabindex="1">
+                   inputmode="decimal" oninput="autoCalc(); syncFromSize()" tabindex="1">
           </div>
         </div>
         <div class="field">
@@ -658,7 +751,7 @@
           <div class="input-wrap">
             <span class="pfx">$</span>
             <input type="number" id="stop" placeholder="9.50" min="0.01" step="0.01"
-                   oninput="autoCalc(); syncFromSize()" tabindex="2">
+                   inputmode="decimal" oninput="autoCalc(); syncFromSize()" tabindex="2">
           </div>
         </div>
         <div class="field">
@@ -666,7 +759,7 @@
           <div class="input-wrap">
             <span class="pfx">$</span>
             <input type="number" id="risk" placeholder="200" min="1" step="10"
-                   oninput="autoCalc(); updatePresetActive()" tabindex="3">
+                   inputmode="decimal" oninput="autoCalc(); updatePresetActive()" tabindex="3">
           </div>
         </div>
       </div>
@@ -738,7 +831,7 @@
           <div class="input-wrap">
             <span class="pfx">$</span>
             <input type="number" id="fxEntry" placeholder="10.00" min="0.01" step="0.01"
-                   oninput="autoCalcFixed(); syncFromCheck()" tabindex="1">
+                   inputmode="decimal" oninput="autoCalcFixed(); syncFromCheck()" tabindex="1">
           </div>
         </div>
         <div class="field">
@@ -746,7 +839,7 @@
           <div class="input-wrap">
             <span class="pfx">$</span>
             <input type="number" id="fxStop" placeholder="9.50" min="0.01" step="0.01"
-                   oninput="autoCalcFixed(); syncFromCheck()" tabindex="2">
+                   inputmode="decimal" oninput="autoCalcFixed(); syncFromCheck()" tabindex="2">
           </div>
         </div>
         <div class="field">
@@ -754,7 +847,7 @@
           <div class="input-wrap">
             <span class="pfx">#</span>
             <input type="number" id="fxShares" placeholder="1000" min="1" step="100"
-                   oninput="autoCalcFixed()" tabindex="3" style="padding-left:22px">
+                   inputmode="numeric" oninput="autoCalcFixed()" tabindex="3" style="padding-left:22px">
           </div>
         </div>
       </div>
@@ -813,32 +906,33 @@
             <label>Entry 入場</label>
             <div class="input-wrap">
               <span class="pfx">$</span>
-              <input type="number" id="dEntry" placeholder="10.00" min="0.01" step="0.01" oninput="updateDanger()">
+              <input type="number" id="dEntry" placeholder="10.00" min="0.01" step="0.01" inputmode="decimal" oninput="updateDanger()">
             </div>
           </div>
           <div class="field">
             <label>Stop 止損</label>
             <div class="input-wrap">
               <span class="pfx">$</span>
-              <input type="number" id="dStop" placeholder="9.50" min="0.01" step="0.01" oninput="updateDanger()">
+              <input type="number" id="dStop" placeholder="9.50" min="0.01" step="0.01" inputmode="decimal" oninput="updateDanger()">
             </div>
           </div>
           <div class="field">
             <label>Max Risk 1R <span style="color:var(--text-dim);font-size:9px">（留空則用固定股數）</span></label>
             <div class="input-wrap">
               <span class="pfx">$</span>
-              <input type="number" id="dRisk" placeholder="200" min="1" step="10" oninput="updateDanger()">
+              <input type="number" id="dRisk" placeholder="200" min="1" step="10" inputmode="decimal" oninput="updateDanger()">
             </div>
           </div>
           <div class="field">
             <label>Fixed Shares <span style="color:var(--text-dim);font-size:9px">（留空則用 1R）</span></label>
             <div class="input-wrap">
               <span class="pfx">#</span>
-              <input type="number" id="dShares" placeholder="1000" min="1" step="100" oninput="updateDanger()" style="padding-left:22px">
+              <input type="number" id="dShares" placeholder="1000" min="1" step="100" inputmode="numeric" oninput="updateDanger()" style="padding-left:22px">
             </div>
           </div>
         </div>
 
+        <div class="table-scroll-hint" id="scrollHint">← 左右滑動查看 →</div>
         <table>
           <thead>
             <tr>
@@ -898,6 +992,44 @@
 
   <script>
     const $ = id => document.getElementById(id);
+
+    /** Per-tab number field order: Enter jumps to next empty (mobile keyboard). */
+    const TAB_FIELD_ORDER = {
+      'tab-size':  ['entry', 'stop', 'risk'],
+      'tab-check': ['fxEntry', 'fxStop', 'fxShares'],
+      'tab-learn': ['dEntry', 'dStop', 'dRisk', 'dShares'],
+    };
+
+    function isNumberInputEmpty(input) {
+      const v = input.value;
+      return v === '' || v == null || String(v).trim() === '';
+    }
+
+    function focusNextEmptyInTab(fromInput) {
+      const pane = fromInput.closest('.tab-pane');
+      if (!pane) return;
+      const order = TAB_FIELD_ORDER[pane.id];
+      if (!order) return;
+      const fields = order.map(id => $(id)).filter(Boolean);
+      const idx = fields.indexOf(fromInput);
+      if (idx === -1) return;
+
+      for (let i = idx + 1; i < fields.length; i++) {
+        if (isNumberInputEmpty(fields[i])) {
+          fields[i].focus();
+          try { fields[i].select(); } catch (_) {}
+          return;
+        }
+      }
+      for (let i = 0; i < idx; i++) {
+        if (isNumberInputEmpty(fields[i])) {
+          fields[i].focus();
+          try { fields[i].select(); } catch (_) {}
+          return;
+        }
+      }
+      fromInput.blur();
+    }
 
     function fmt(n, d = 2) {
       return '$' + n.toFixed(d).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
@@ -1194,6 +1326,17 @@
         if (active) active.querySelectorAll('input').forEach(i => i.value = '');
         autoCalc();
         autoCalcFixed();
+        updateDanger();
+        return;
+      }
+
+      if (e.key === 'Enter') {
+        const el = e.target;
+        if (!el || el.tagName !== 'INPUT' || el.type !== 'number') return;
+        const pane = el.closest('.tab-pane');
+        if (!pane || !TAB_FIELD_ORDER[pane.id]) return;
+        e.preventDefault();
+        focusNextEmptyInTab(el);
       }
     });
 
