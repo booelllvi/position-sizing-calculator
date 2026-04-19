@@ -277,6 +277,51 @@
     }
     .trap-text { font-size: 13px; color: var(--text-muted); line-height: 1.6; }
 
+    /* ── PRESETS ── */
+    .presets {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 6px;
+    }
+    .preset-btn {
+      font-family: var(--mono);
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--text-muted);
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 5px 10px;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .preset-btn:hover { color: var(--text); border-color: var(--border-hi); }
+    .preset-btn.active { color: var(--blue); border-color: rgba(10,132,255,0.4); background: rgba(10,132,255,0.08); }
+
+    /* ── LANG TOGGLE ── */
+    .header-inner {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+    }
+    .lang-btn {
+      position: absolute;
+      right: 0;
+      font-family: var(--font);
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-muted);
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 4px 10px;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .lang-btn:hover { color: var(--text); border-color: var(--border-hi); }
+
     /* ── RESPONSIVE ── */
     @media (max-width: 600px) {
       .header { padding: 12px 16px; }
@@ -323,7 +368,10 @@
 
   <!-- ── HEADER ── -->
   <div class="header">
-    <div class="header-title">PSC <span>· Position Sizing Calculator</span></div>
+    <div class="header-inner">
+      <div class="header-title">PSC <span>· Position Sizing Calculator</span></div>
+      <button class="lang-btn" onclick="toggleLang()" id="langBtn">EN</button>
+    </div>
   </div>
 
   <!-- ── CONTENT ── -->
@@ -331,88 +379,104 @@
 
     <!-- Danger demo -->
     <div class="section learn-section">
-      <div class="section-title red">固定股數的危險</div>
+      <div class="section-title red" data-i18n="title_danger">固定股數的危險</div>
       <div class="danger-inputs">
         <div class="field">
-          <label>Entry 入場</label>
+          <label data-i18n="lbl_entry">Entry 入場</label>
           <div class="input-wrap">
             <span class="pfx">$</span>
             <input type="number" id="dEntry" placeholder="10.00" min="0.01" step="0.01" inputmode="decimal" oninput="updateDanger()">
           </div>
         </div>
         <div class="field">
-          <label>Stop 止損</label>
+          <label data-i18n="lbl_stop">Stop 止損</label>
           <div class="input-wrap">
             <span class="pfx">$</span>
             <input type="number" id="dStop" placeholder="9.50" min="0.01" step="0.01" inputmode="decimal" oninput="updateDanger()">
           </div>
         </div>
         <div class="field">
-          <label>Max Risk 1R <span>（留空則用固定股數）</span></label>
+          <label data-i18n="lbl_risk">Max Risk 1R <span>（留空則用固定股數）</span></label>
           <div class="input-wrap">
             <span class="pfx">$</span>
-            <input type="number" id="dRisk" placeholder="200" min="1" step="10" inputmode="decimal" oninput="updateDanger()">
+            <input type="number" id="dRisk" placeholder="200" min="1" step="10" inputmode="decimal" oninput="updateDanger(); syncPresets()">
+          </div>
+          <div class="presets" id="riskPresets">
+            <button class="preset-btn" onclick="setPreset('dRisk',25)">$25</button>
+            <button class="preset-btn" onclick="setPreset('dRisk',50)">$50</button>
+            <button class="preset-btn" onclick="setPreset('dRisk',75)">$75</button>
+            <button class="preset-btn" onclick="setPreset('dRisk',100)">$100</button>
+            <button class="preset-btn" onclick="setPreset('dRisk',150)">$150</button>
+            <button class="preset-btn" onclick="setPreset('dRisk',200)">$200</button>
           </div>
         </div>
         <div class="field">
-          <label>Fixed Shares <span>（留空則用 1R）</span></label>
+          <label data-i18n="lbl_shares">Fixed Shares <span>（留空則用 1R）</span></label>
           <div class="input-wrap">
             <span class="pfx">#</span>
-            <input type="number" id="dShares" placeholder="1000" min="1" step="100" inputmode="numeric" oninput="updateDanger()" style="padding-left:28px">
+            <input type="number" id="dShares" placeholder="1000" min="1" step="100" inputmode="numeric" oninput="updateDanger(); syncPresets()" style="padding-left:28px">
+          </div>
+          <div class="presets" id="sharesPresets">
+            <button class="preset-btn" onclick="setPreset('dShares',50)">50</button>
+            <button class="preset-btn" onclick="setPreset('dShares',100)">100</button>
+            <button class="preset-btn" onclick="setPreset('dShares',300)">300</button>
+            <button class="preset-btn" onclick="setPreset('dShares',1000)">1k</button>
+            <button class="preset-btn" onclick="setPreset('dShares',2400)">2.4k</button>
+            <button class="preset-btn" onclick="setPreset('dShares',3600)">3.6k</button>
           </div>
         </div>
       </div>
 
-      <div class="table-scroll-hint" id="scrollHint">← 左右滑動查看 →</div>
+      <div class="table-scroll-hint" id="scrollHint" data-i18n="scroll_hint">← 左右滑動查看 →</div>
       <table>
         <thead>
           <tr>
-            <th>止損位</th>
+            <th data-i18n="th_stop">止損位</th>
             <th>R/Share</th>
-            <th>總虧損</th>
+            <th data-i18n="th_loss">總虧損</th>
             <th>1R Price / Win</th>
             <th>2R Price / Win</th>
-            <th>風險</th>
+            <th data-i18n="th_risk">風險</th>
           </tr>
         </thead>
         <tbody id="dangerBody"></tbody>
       </table>
 
-      <div class="risk-note" id="riskNote" style="display:none">
+      <div class="risk-note" id="riskNote" style="display:none" data-i18n-tpl="risk_note">
         ⚠ 同樣股數，不同止損距離，虧損差距 <strong id="riskRangeSpan">—</strong>。這就是風控失控。
       </div>
     </div>
 
     <!-- Mindset -->
     <div class="section">
-      <div class="section-title blue">核心心法</div>
+      <div class="section-title blue" data-i18n="title_mindset">核心心法</div>
       <div class="mindset-grid">
         <div class="mbox mbox-wrong">
-          <div class="mbox-tag">❌ 錯誤</div>
-          <div class="mbox-text">「我看好這隻，<em>買 1000 股</em>吧。」</div>
-          <div class="mbox-sub">風險未知 → 情緒失控 → 大虧</div>
+          <div class="mbox-tag" data-i18n="tag_wrong">❌ 錯誤</div>
+          <div class="mbox-text" data-i18n="mbox_wrong_text">「我看好這隻，<em>買 1000 股</em>吧。」</div>
+          <div class="mbox-sub" data-i18n="mbox_wrong_sub">風險未知 → 情緒失控 → 大虧</div>
         </div>
         <div class="mbox mbox-right">
-          <div class="mbox-tag">✅ 正確</div>
-          <div class="mbox-text">「最多虧 $200，止損 $0.50，<em>400 股</em>。」</div>
-          <div class="mbox-sub">風險鎖死 → 情緒穩定 → 持續賺</div>
+          <div class="mbox-tag" data-i18n="tag_right">✅ 正確</div>
+          <div class="mbox-text" data-i18n="mbox_right_text">「最多虧 $200，止損 $0.50，<em>400 股</em>。」</div>
+          <div class="mbox-sub" data-i18n="mbox_right_sub">風險鎖死 → 情緒穩定 → 持續賺</div>
         </div>
       </div>
     </div>
 
     <!-- Traps -->
     <div class="section">
-      <div class="section-title amber">兩個致命陷阱</div>
+      <div class="section-title amber" data-i18n="title_traps">兩個致命陷阱</div>
       <div class="traps-grid">
         <div class="trap-item">
           <div class="trap-num">01</div>
-          <div class="trap-title">風險失控</div>
-          <div class="trap-text">固定 1000 股，止損遠一點就虧千幾。連停損兩次直接觸發報復式交易。</div>
+          <div class="trap-title" data-i18n="trap1_title">風險失控</div>
+          <div class="trap-text" data-i18n="trap1_text">固定 1000 股，止損遠一點就虧千幾。連停損兩次直接觸發報復式交易。</div>
         </div>
         <div class="trap-item">
           <div class="trap-num">02</div>
-          <div class="trap-title">被 Noise 洗出場</div>
-          <div class="trap-text">怕虧就把止損硬壓緊，結果被輕微震盪掃走，方向對了卻賠錢。</div>
+          <div class="trap-title" data-i18n="trap2_title">被 Noise 洗出場</div>
+          <div class="trap-text" data-i18n="trap2_text">怕虧就把止損硬壓緊，結果被輕微震盪掃走，方向對了卻賠錢。</div>
         </div>
       </div>
     </div>
@@ -421,27 +485,123 @@
 
   <script>
     const $ = id => document.getElementById(id);
-
     const FIELD_ORDER = ['dEntry', 'dStop', 'dRisk', 'dShares'];
 
     function fmt(n, d = 2) {
       return '$' + n.toFixed(d).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
     }
 
+    /* ── i18n ── */
+    let lang = 'zh';
+    const I18N = {
+      zh: {
+        title_danger: '固定股數的危險',
+        lbl_entry: 'Entry 入場',
+        lbl_stop: 'Stop 止損',
+        lbl_risk: 'Max Risk 1R <span>（留空則用固定股數）</span>',
+        lbl_shares: 'Fixed Shares <span>（留空則用 1R）</span>',
+        scroll_hint: '← 左右滑動查看 →',
+        th_stop: '止損位', th_loss: '總虧損', th_risk: '風險',
+        title_mindset: '核心心法',
+        tag_wrong: '❌ 錯誤', tag_right: '✅ 正確',
+        mbox_wrong_text: '「我看好這隻，<em>買 1000 股</em>吧。」',
+        mbox_wrong_sub: '風險未知 → 情緒失控 → 大虧',
+        mbox_right_text: '「最多虧 $200，止損 $0.50，<em>400 股</em>。」',
+        mbox_right_sub: '風險鎖死 → 情緒穩定 → 持續賺',
+        title_traps: '兩個致命陷阱',
+        trap1_title: '風險失控',
+        trap1_text: '固定 1000 股，止損遠一點就虧千幾。連停損兩次直接觸發報復式交易。',
+        trap2_title: '被 Noise 洗出場',
+        trap2_text: '怕虧就把止損硬壓緊，結果被輕微震盪掃走，方向對了卻賠錢。',
+        risk_note: '⚠ 同樣股數，不同止損距離，虧損差距 <strong id="riskRangeSpan">—</strong>。這就是風控失控。',
+        // dynamic labels used in table rows
+        stop_very_tight: '極緊', stop_tight: '很緊', stop_normal: '一般',
+        stop_fair: '合理', stop_wide: '較寬',
+        your_stop: '你的止損', shares_unit: '股', pill_safe: '安全',
+        pill_low: '低', pill_med: '中', pill_high: '高', pill_max: '極高',
+      },
+      en: {
+        title_danger: 'The Danger of Fixed Shares',
+        lbl_entry: 'Entry Price',
+        lbl_stop: 'Stop Loss',
+        lbl_risk: 'Max Risk 1R <span>(leave empty to use fixed shares)</span>',
+        lbl_shares: 'Fixed Shares <span>(leave empty to use 1R)</span>',
+        scroll_hint: '← Swipe to see more →',
+        th_stop: 'Stop', th_loss: 'Total Loss', th_risk: 'Risk',
+        title_mindset: 'Core Mindset',
+        tag_wrong: '❌ Wrong', tag_right: '✅ Correct',
+        mbox_wrong_text: '"I like this stock, let me <em>buy 1000 shares</em>."',
+        mbox_wrong_sub: 'Unknown risk → Emotional → Big loss',
+        mbox_right_text: '"Max loss $200, stop $0.50, that\'s <em>400 shares</em>."',
+        mbox_right_sub: 'Risk locked → Calm → Consistent profits',
+        title_traps: 'Two Fatal Traps',
+        trap1_title: 'Uncontrolled Risk',
+        trap1_text: 'Fixed 1000 shares — a wider stop means hundreds more in losses. Two stops in a row triggers revenge trading.',
+        trap2_title: 'Stopped Out by Noise',
+        trap2_text: 'Fear of loss leads to overly tight stops. Minor fluctuations knock you out, even when direction is right.',
+        risk_note: '⚠ Same shares, different stop distances, loss gap: <strong id="riskRangeSpan">—</strong>. This is risk out of control.',
+        stop_very_tight: 'Very tight', stop_tight: 'Tight', stop_normal: 'Normal',
+        stop_fair: 'Fair', stop_wide: 'Wide',
+        your_stop: 'Your stop', shares_unit: 'sh', pill_safe: 'Safe',
+        pill_low: 'Low', pill_med: 'Med', pill_high: 'High', pill_max: 'Extreme',
+      }
+    };
+
+    function t(key) { return I18N[lang][key] || key; }
+
+    function applyLang() {
+      document.querySelectorAll('[data-i18n]').forEach(el => {
+        const key = el.dataset.i18n;
+        if (I18N[lang][key] !== undefined) el.innerHTML = I18N[lang][key];
+      });
+      document.querySelectorAll('[data-i18n-tpl]').forEach(el => {
+        const key = el.dataset.i18nTpl;
+        if (I18N[lang][key] !== undefined) el.innerHTML = I18N[lang][key];
+      });
+      $('langBtn').textContent = lang === 'zh' ? 'EN' : '中文';
+      updateDanger();
+    }
+
+    function toggleLang() {
+      lang = lang === 'zh' ? 'en' : 'zh';
+      applyLang();
+    }
+
+    /* ── Presets ── */
+    function setPreset(inputId, val) {
+      $(inputId).value = val;
+      syncPresets();
+      updateDanger();
+    }
+
+    function syncPresets() {
+      const riskVal = parseFloat($('dRisk').value);
+      $('riskPresets').querySelectorAll('.preset-btn').forEach(btn => {
+        const v = parseFloat(btn.textContent.replace(/[$,]/g, ''));
+        btn.classList.toggle('active', v === riskVal);
+      });
+      const sharesVal = parseInt($('dShares').value);
+      const sharesMap = { '50': 50, '100': 100, '300': 300, '1k': 1000, '2.4k': 2400, '3.6k': 3600 };
+      $('sharesPresets').querySelectorAll('.preset-btn').forEach(btn => {
+        const v = sharesMap[btn.textContent] || 0;
+        btn.classList.toggle('active', v === sharesVal);
+      });
+    }
+
     /* ── Danger table ── */
     const STOP_OFFSETS = [
-      { label: '極緊', pct: 0.01 },
-      { label: '很緊', pct: 0.02 },
-      { label: '一般', pct: 0.05 },
-      { label: '合理', pct: 0.08 },
-      { label: '較寬', pct: 0.12 },
+      { key: 'stop_very_tight', pct: 0.01 },
+      { key: 'stop_tight',      pct: 0.02 },
+      { key: 'stop_normal',     pct: 0.05 },
+      { key: 'stop_fair',       pct: 0.08 },
+      { key: 'stop_wide',       pct: 0.12 },
     ];
 
     function riskClass(r) {
-      if (r <= 100) return { cls: 'pill-low',  label: '低' };
-      if (r <= 300) return { cls: 'pill-med',  label: '中' };
-      if (r <= 700) return { cls: 'pill-high', label: '高' };
-      return             { cls: 'pill-max',  label: '極高' };
+      if (r <= 100) return { cls: 'pill-low',  label: t('pill_low') };
+      if (r <= 300) return { cls: 'pill-med',  label: t('pill_med') };
+      if (r <= 700) return { cls: 'pill-high', label: t('pill_high') };
+      return             { cls: 'pill-max',  label: t('pill_max') };
     }
 
     function riskColor(r) {
@@ -504,10 +664,10 @@
         tr.innerHTML = `
           <td style="color:var(--text)">${fmt(actualStop)} <span style="font-size:10px;color:var(--green)">✓ 1R (${stopPct}%)</span></td>
           <td style="color:var(--text-muted)">${fmt(rps)}</td>
-          <td style="color:var(--green);font-weight:700">${fmt(totalR, 0)} <span style="font-size:10px;color:rgba(48,209,88,0.6)">(${calcSh} 股)</span></td>
+          <td style="color:var(--green);font-weight:700">${fmt(totalR, 0)} <span style="font-size:10px;color:rgba(48,209,88,0.6)">(${calcSh} ${t('shares_unit')})</span></td>
           <td><span style="color:var(--text);font-weight:600">${fmt(t1)}</span> <span style="color:var(--green);font-size:10px">+${fmt(totalR,0)}</span></td>
           <td><span style="color:var(--text);font-weight:600">${fmt(t2)}</span> <span style="color:var(--green);font-size:10px">+${fmt(totalR*2,0)}</span></td>
-          <td><span class="pill pill-low">安全</span></td>
+          <td><span class="pill pill-low">${t('pill_safe')}</span></td>
         `;
         tbody.appendChild(tr);
         if (totalR < minR) minR = totalR;
@@ -521,12 +681,12 @@
         const stopPct = (rps / baseEntry * 100).toFixed(1);
         if (totalR < minR) minR = totalR;
         if (totalR > maxR) maxR = totalR;
-        tbody.appendChild(makeDangerRow(baseEntry, actualStop, rps, totalR, `你的止損 ${stopPct}%`, true));
+        tbody.appendChild(makeDangerRow(baseEntry, actualStop, rps, totalR, `${t('your_stop')} ${stopPct}%`, true));
       }
 
       // Scenario rows (only if no 1R calc)
       if (!maxRisk) {
-        STOP_OFFSETS.forEach(({ label, pct }) => {
+        STOP_OFFSETS.forEach(({ key, pct }) => {
           const rps  = +(baseEntry * pct).toFixed(2);
           const stop = +(baseEntry - rps).toFixed(2);
           if (stop <= 0) return;
@@ -534,7 +694,7 @@
           const totalR = shares * rps;
           if (totalR < minR) minR = totalR;
           if (totalR > maxR) maxR = totalR;
-          tbody.appendChild(makeDangerRow(baseEntry, stop, rps, totalR, label, false));
+          tbody.appendChild(makeDangerRow(baseEntry, stop, rps, totalR, t(key), false));
         });
       }
 
@@ -547,6 +707,7 @@
     document.addEventListener('keydown', e => {
       if (e.key === 'Escape') {
         document.querySelectorAll('input').forEach(i => i.value = '');
+        syncPresets();
         updateDanger();
         return;
       }
