@@ -287,7 +287,7 @@
       .danger-inputs { gap: 10px; }
       input[type="number"] { padding: 14px 12px 14px 28px; font-size: 16px; }
       .learn-section table { display: block; overflow-x: auto; -webkit-overflow-scrolling: touch; white-space: nowrap; }
-      .learn-section thead, .learn-section tbody { display: table; width: 100%; min-width: 580px; }
+      .learn-section thead, .learn-section tbody { display: table; width: 100%; min-width: 860px; }
       .learn-section thead th, .learn-section tbody td { padding: 10px 8px; font-size: 11px; }
       .table-scroll-hint { display: block; }
       .mindset-grid { grid-template-columns: 1fr; }
@@ -419,6 +419,10 @@
             <th data-i18n="th_loss">總虧損</th>
             <th>1R Price / Win</th>
             <th>2R Price / Win</th>
+            <th>3R Price / Win</th>
+            <th>4R Price / Win</th>
+            <th>5R Price / Win</th>
+            <th>6R Price / Win</th>
             <th data-i18n="th_risk">風險</th>
           </tr>
         </thead>
@@ -729,15 +733,18 @@
 
     function makeDangerRow(entry, stop, rps, totalR, label, highlight) {
       const { cls, label: rl } = riskClass(totalR);
-      const t1 = entry + rps, t2 = entry + rps * 2;
       const tr = document.createElement('tr');
       if (highlight) tr.style.cssText = 'background:rgba(10,132,255,0.08);outline:1px solid rgba(10,132,255,0.25)';
+      const rCells = [1,2,3,4,5,6].map(r => {
+        const price = entry + rps * r;
+        const win   = totalR * r;
+        return `<td><span style="color:var(--text);font-weight:600">${fmt(price)}</span> <span style="color:var(--green);font-size:10px">+${fmt(win,0)}</span></td>`;
+      }).join('');
       tr.innerHTML = `
         <td style="color:var(--text)">${fmt(stop)} <span style="font-size:10px;color:${highlight?'var(--blue)':'var(--text-muted)'}">(${label})</span></td>
         <td style="color:var(--text-muted)">${fmt(rps)}</td>
         <td style="color:${riskColor(totalR)};font-weight:600">${fmt(totalR,0)}</td>
-        <td><span style="color:var(--text);font-weight:600">${fmt(t1)}</span> <span style="color:var(--green);font-size:10px">+${fmt(totalR,0)}</span></td>
-        <td><span style="color:var(--text);font-weight:600">${fmt(t2)}</span> <span style="color:var(--green);font-size:10px">+${fmt(totalR*2,0)}</span></td>
+        ${rCells}
         <td><span class="pill ${cls}">${rl}</span></td>`;
       return tr;
     }
@@ -768,15 +775,18 @@
         const calcSh = Math.max(1, Math.floor(maxRisk / rps));
         const totalR = calcSh * rps;
         const stopPct = (rps / baseEntry * 100).toFixed(1);
-        const t1 = baseEntry + rps, t2 = baseEntry + rps * 2;
         const tr = document.createElement('tr');
         tr.style.cssText = 'background:rgba(48,209,88,0.07);outline:1px solid rgba(48,209,88,0.2)';
+        const rCells1R = [1,2,3,4,5,6].map(r => {
+          const price = baseEntry + rps * r;
+          const win   = totalR * r;
+          return `<td><span style="color:var(--text);font-weight:600">${fmt(price)}</span> <span style="color:var(--green);font-size:10px">+${fmt(win,0)}</span></td>`;
+        }).join('');
         tr.innerHTML = `
           <td style="color:var(--text)">${fmt(actualStop)} <span style="font-size:10px;color:var(--green)">✓ 1R (${stopPct}%)</span></td>
           <td style="color:var(--text-muted)">${fmt(rps)}</td>
           <td style="color:var(--green);font-weight:700">${fmt(totalR,0)} <span style="font-size:10px;color:rgba(48,209,88,0.6)">(${calcSh} ${t('shares_unit')})</span></td>
-          <td><span style="color:var(--text);font-weight:600">${fmt(t1)}</span> <span style="color:var(--green);font-size:10px">+${fmt(totalR,0)}</span></td>
-          <td><span style="color:var(--text);font-weight:600">${fmt(t2)}</span> <span style="color:var(--green);font-size:10px">+${fmt(totalR*2,0)}</span></td>
+          ${rCells1R}
           <td><span class="pill pill-low">${t('pill_safe')}</span></td>`;
         tbody.appendChild(tr);
         if (totalR < minR) minR = totalR;
