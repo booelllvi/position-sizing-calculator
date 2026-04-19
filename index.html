@@ -28,10 +28,8 @@
       --mono:       'SF Mono', 'Menlo', 'Consolas', 'Liberation Mono', monospace;
       --r-sm: 10px; --r-md: 14px; --r-lg: 18px;
     }
-
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    html { font-size: 16px; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
-
+    html { font-size: 16px; -webkit-font-smoothing: antialiased; }
     body {
       background: var(--bg);
       color: var(--text);
@@ -42,101 +40,72 @@
       padding-bottom: env(safe-area-inset-bottom);
     }
 
-    /* ── HEADER ── */
+    /* HEADER */
     .header {
-      position: sticky;
-      top: 0;
-      z-index: 10;
+      position: sticky; top: 0; z-index: 10;
       padding: 14px 20px;
       background: rgba(0,0,0,0.85);
       backdrop-filter: saturate(180%) blur(20px);
       -webkit-backdrop-filter: saturate(180%) blur(20px);
       border-bottom: 1px solid var(--border);
     }
-
-    .header-title {
-      font-family: var(--font);
-      font-size: 17px;
-      font-weight: 600;
-      color: var(--text);
-      letter-spacing: -0.01em;
-      text-align: center;
-    }
+    .header-inner { display: flex; align-items: center; justify-content: center; position: relative; }
+    .header-title { font-size: 17px; font-weight: 600; letter-spacing: -0.01em; text-align: center; }
     .header-title span { color: var(--text-muted); font-weight: 400; }
-
-    /* ── CONTENT ── */
-    .content {
-      max-width: 640px;
-      margin: 0 auto;
-      padding: 24px 20px calc(40px + env(safe-area-inset-bottom));
+    .lang-btn {
+      position: absolute; right: 0;
+      font-size: 12px; font-weight: 600;
+      color: var(--text-muted); background: var(--surface);
+      border: 1px solid var(--border); border-radius: 8px;
+      padding: 4px 10px; cursor: pointer; transition: all 0.15s;
     }
+    .lang-btn:hover { color: var(--text); border-color: var(--border-hi); }
 
-    /* ── SECTIONS ── */
+    /* CONTENT */
+    .content { max-width: 640px; margin: 0 auto; padding: 24px 20px calc(40px + env(safe-area-inset-bottom)); }
+
+    /* SECTIONS */
     .section { margin-bottom: 32px; }
-
     .section-title {
-      font-family: var(--font);
-      font-size: 22px;
-      font-weight: 700;
-      letter-spacing: -0.02em;
-      margin-bottom: 16px;
-      display: flex;
-      align-items: center;
-      gap: 10px;
+      font-size: 22px; font-weight: 700; letter-spacing: -0.02em;
+      margin-bottom: 16px; display: flex; align-items: center; gap: 10px;
     }
     .section-title::before {
-      content: '';
-      display: inline-block;
-      width: 8px; height: 8px;
-      border-radius: 50%;
-      flex-shrink: 0;
+      content: ''; display: inline-block; width: 8px; height: 8px;
+      border-radius: 50%; flex-shrink: 0;
     }
     .section-title.red::before   { background: var(--red); }
     .section-title.amber::before { background: var(--amber); }
     .section-title.blue::before  { background: var(--blue); }
+    .section-title.green::before { background: var(--green); }
 
-    /* ── INPUTS ── */
-    .danger-inputs {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 12px;
-      margin-bottom: 16px;
+    /* INPUTS */
+    .account-inputs {
+      display: grid; grid-template-columns: 1fr 1fr 1fr;
+      gap: 12px; margin-bottom: 12px;
     }
-
+    .danger-inputs {
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 12px; margin-bottom: 16px;
+    }
     .field { display: flex; flex-direction: column; gap: 6px; }
-
     .field label {
-      font-family: var(--font);
-      font-size: 11px;
-      font-weight: 600;
-      letter-spacing: 0.04em;
-      text-transform: uppercase;
-      color: var(--text-muted);
+      font-size: 11px; font-weight: 600; letter-spacing: 0.04em;
+      text-transform: uppercase; color: var(--text-muted);
     }
     .field label span { color: var(--text-dim); font-weight: 400; font-size: 10px; text-transform: none; }
-
     .input-wrap { position: relative; display: flex; align-items: center; }
-
     .input-wrap .pfx {
-      position: absolute;
-      left: 12px;
-      color: var(--text-muted);
-      font-family: var(--mono);
-      font-size: 14px;
-      pointer-events: none;
+      position: absolute; left: 12px; z-index: 1;
+      color: var(--text-muted); font-family: var(--mono);
+      font-size: 14px; pointer-events: none;
     }
-
     input[type="number"] {
-      width: 100%;
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: var(--r-sm);
+      width: 100%; background: var(--surface);
+      border: 1px solid var(--border); border-radius: var(--r-sm);
       padding: 12px 12px 12px 28px;
-      color: var(--text);
-      font-family: var(--mono);
-      font-size: 16px;
-      font-weight: 500;
-      outline: none;
+      color: var(--text); font-family: var(--mono);
+      font-size: 16px; font-weight: 500; outline: none;
       transition: border-color 0.2s, box-shadow 0.2s;
       -moz-appearance: textfield;
     }
@@ -146,227 +115,195 @@
       border-color: rgba(10,132,255,0.6);
       box-shadow: 0 0 0 3px rgba(10,132,255,0.15);
     }
-    input[type="number"].error {
-      border-color: rgba(255,69,58,0.6);
-      box-shadow: 0 0 0 3px rgba(255,69,58,0.12);
-    }
-    input[type="number"].ok {
-      border-color: rgba(48,209,88,0.35);
-    }
 
-    /* ── TABLE ── */
+    /* STEP BUTTONS */
+    .stop-wrap input {
+      flex: 1; min-width: 0; width: auto;
+      border-radius: var(--r-sm) 0 0 var(--r-sm);
+      border-right: none;
+    }
+    .stop-wrap input:focus { box-shadow: none; }
+    .stop-wrap:focus-within {
+      border-radius: var(--r-sm);
+      box-shadow: 0 0 0 3px rgba(10,132,255,0.15);
+    }
+    .step-btns { display: flex; flex-shrink: 0; }
+    .step-btn {
+      background: var(--surface-2); border: 1px solid var(--border);
+      color: var(--text-muted); width: 36px; min-height: 44px;
+      font-size: 20px; font-weight: 300; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      transition: all 0.12s; user-select: none; -webkit-user-select: none;
+      padding: 0;
+    }
+    .step-btn:first-child { border-right: none; }
+    .step-btn:last-child { border-radius: 0 var(--r-sm) var(--r-sm) 0; }
+    .step-btn:hover { color: var(--text); border-color: var(--border-hi); }
+    .step-btn:active { background: rgba(10,132,255,0.2); color: var(--blue); }
+
+    /* ACCOUNT DERIVED */
+    .acct-derived {
+      display: flex; align-items: center; gap: 8px;
+      padding: 10px 14px;
+      background: var(--green-dim); border: 1px solid rgba(48,209,88,0.15);
+      border-radius: var(--r-md); font-family: var(--mono);
+      font-size: 13px; color: var(--green); margin-bottom: 16px;
+    }
+    .acct-derived-label { color: rgba(48,209,88,0.6); font-size: 11px; font-family: var(--font); font-weight: 600; letter-spacing: 0.03em; text-transform: uppercase; }
+
+    /* TABLE */
     .table-scroll-hint {
-      display: none;
-      font-family: var(--mono);
-      font-size: 11px;
-      color: var(--text-dim);
-      text-align: center;
-      padding: 6px 0;
+      display: none; font-family: var(--mono); font-size: 11px;
+      color: var(--text-dim); text-align: center; padding: 6px 0;
     }
-
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      font-family: var(--mono);
-      font-size: 12px;
-      margin-bottom: 12px;
-    }
+    table { width: 100%; border-collapse: collapse; font-family: var(--mono); font-size: 12px; margin-bottom: 12px; }
     thead th {
-      text-align: left;
-      color: var(--text-muted);
-      font-family: var(--font);
-      font-size: 11px;
-      font-weight: 600;
-      letter-spacing: 0.03em;
-      text-transform: uppercase;
-      padding: 0 10px 10px;
+      text-align: left; color: var(--text-muted); font-family: var(--font);
+      font-size: 11px; font-weight: 600; letter-spacing: 0.03em;
+      text-transform: uppercase; padding: 0 10px 10px;
       border-bottom: 1px solid var(--border-hi);
     }
     tbody tr { transition: background 0.15s; }
     tbody tr:hover { background: rgba(255,255,255,0.03); }
-    tbody td {
-      padding: 10px;
-      border-bottom: 1px solid var(--border);
-    }
+    tbody td { padding: 10px; border-bottom: 1px solid var(--border); }
     tbody tr:last-child td { border-bottom: none; }
-
     .pill {
-      display: inline-flex;
-      align-items: center;
-      padding: 3px 9px;
-      border-radius: 100px;
-      font-size: 11px;
-      font-weight: 600;
-      font-family: var(--font);
+      display: inline-flex; align-items: center;
+      padding: 3px 9px; border-radius: 100px;
+      font-size: 11px; font-weight: 600; font-family: var(--font);
     }
     .pill-low  { background: rgba(48,209,88,0.12);  color: var(--green); }
     .pill-med  { background: rgba(255,214,10,0.12);  color: var(--amber); }
     .pill-high { background: rgba(255,69,58,0.12);   color: var(--red); }
     .pill-max  { background: rgba(255,69,58,0.20);   color: var(--red); }
 
+    /* TRADE SUMMARY CARDS */
+    .trade-summary {
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 8px; margin-bottom: 12px;
+    }
+    .summary-card {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--r-md); padding: 12px 14px;
+    }
+    .summary-label {
+      font-size: 10px; font-weight: 600; letter-spacing: 0.04em;
+      text-transform: uppercase; color: var(--text-muted); margin-bottom: 4px;
+    }
+    .summary-value { font-family: var(--mono); font-size: 17px; font-weight: 600; color: var(--text); }
+    .summary-sub { font-family: var(--mono); font-size: 11px; color: var(--text-muted); margin-top: 2px; }
+
+    /* RISK NOTE */
     .risk-note {
       padding: 12px 16px;
-      background: rgba(255,69,58,0.06);
-      border: 1px solid rgba(255,69,58,0.15);
-      border-radius: var(--r-md);
-      font-size: 13px;
-      color: var(--text-muted);
-      line-height: 1.6;
+      background: rgba(255,69,58,0.06); border: 1px solid rgba(255,69,58,0.15);
+      border-radius: var(--r-md); font-size: 13px; color: var(--text-muted);
+      line-height: 1.6; margin-bottom: 16px;
     }
     .risk-note strong { color: var(--red); }
 
-    /* ── MINDSET ── */
-    .mindset-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 12px;
-      margin-bottom: 16px;
+    /* LOG BUTTON */
+    .log-btn {
+      width: 100%; background: var(--blue-dim);
+      border: 1px solid rgba(10,132,255,0.25); border-radius: var(--r-md);
+      padding: 13px; color: var(--blue); font-family: var(--font);
+      font-size: 14px; font-weight: 600; cursor: pointer;
+      transition: all 0.15s; letter-spacing: -0.01em;
     }
+    .log-btn:hover { background: rgba(10,132,255,0.2); border-color: rgba(10,132,255,0.4); }
+    .log-btn:disabled { opacity: 0.35; cursor: not-allowed; }
 
-    .mbox {
-      border-radius: var(--r-md);
-      padding: 16px;
+    /* TRADE LOG */
+    .log-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+    .log-count { font-family: var(--mono); font-size: 12px; color: var(--text-dim); }
+    .log-clear-btn {
+      font-size: 12px; font-weight: 500; color: var(--red); background: none;
+      border: 1px solid rgba(255,69,58,0.2); border-radius: 8px;
+      padding: 4px 10px; cursor: pointer; transition: all 0.15s;
     }
+    .log-clear-btn:hover { background: var(--red-dim); border-color: rgba(255,69,58,0.35); }
+    .log-empty {
+      text-align: center; padding: 28px 24px; color: var(--text-dim);
+      font-size: 13px; background: var(--surface);
+      border: 1px solid var(--border); border-radius: var(--r-md);
+    }
+    .log-item {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--r-md); padding: 12px 14px;
+      margin-bottom: 8px; display: flex; align-items: center; gap: 10px;
+    }
+    .log-item-data { flex: 1; min-width: 0; }
+    .log-item-time { font-family: var(--mono); font-size: 10px; color: var(--text-dim); margin-bottom: 3px; }
+    .log-item-main { font-family: var(--mono); font-size: 13px; color: var(--text); }
+    .log-item-sub { font-family: var(--mono); font-size: 11px; color: var(--text-muted); margin-top: 2px; }
+    .log-del-btn {
+      background: none; border: none; color: var(--text-dim);
+      font-size: 18px; line-height: 1; cursor: pointer;
+      padding: 4px 6px; flex-shrink: 0; border-radius: 6px; transition: all 0.15s;
+    }
+    .log-del-btn:hover { color: var(--red); background: var(--red-dim); }
+
+    /* MINDSET */
+    .mindset-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 16px; }
+    .mbox { border-radius: var(--r-md); padding: 16px; }
     .mbox-wrong { background: var(--red-dim); border: 1px solid rgba(255,69,58,0.18); }
     .mbox-right { background: var(--green-dim); border: 1px solid rgba(48,209,88,0.18); }
-
-    .mbox-tag {
-      font-family: var(--font);
-      font-size: 11px;
-      font-weight: 700;
-      letter-spacing: 0.04em;
-      text-transform: uppercase;
-      margin-bottom: 8px;
-    }
+    .mbox-tag { font-size: 11px; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; margin-bottom: 8px; }
     .mbox-wrong .mbox-tag { color: var(--red); }
     .mbox-right .mbox-tag { color: var(--green); }
-
     .mbox-text { font-size: 14px; line-height: 1.6; color: var(--text); }
     .mbox-text em { font-style: normal; font-weight: 700; }
-
     .mbox-sub { margin-top: 8px; font-size: 13px; line-height: 1.5; }
     .mbox-wrong .mbox-sub { color: rgba(255,69,58,0.75); }
     .mbox-right .mbox-sub { color: rgba(48,209,88,0.8); }
 
-    /* ── TRAPS ── */
-    .traps-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 12px;
-    }
-    .trap-item {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: var(--r-md);
-      padding: 16px;
-    }
-    .trap-num {
-      font-family: var(--mono);
-      font-size: 1.4rem;
-      font-weight: 700;
-      color: var(--red);
-      line-height: 1;
-      margin-bottom: 6px;
-    }
-    .trap-title {
-      font-family: var(--font);
-      font-size: 15px;
-      font-weight: 700;
-      color: var(--text);
-      margin-bottom: 6px;
-    }
+    /* TRAPS */
+    .traps-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .trap-item { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r-md); padding: 16px; }
+    .trap-num { font-family: var(--mono); font-size: 1.4rem; font-weight: 700; color: var(--red); line-height: 1; margin-bottom: 6px; }
+    .trap-title { font-size: 15px; font-weight: 700; color: var(--text); margin-bottom: 6px; }
     .trap-text { font-size: 13px; color: var(--text-muted); line-height: 1.6; }
 
-    /* ── PRESETS ── */
-    .presets {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 6px;
-      margin-top: 6px;
-    }
+    /* PRESETS */
+    .presets { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 6px; }
     .preset-btn {
-      font-family: var(--mono);
-      font-size: 11px;
-      font-weight: 600;
-      color: var(--text-muted);
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      padding: 5px 10px;
-      cursor: pointer;
-      transition: all 0.15s;
+      font-family: var(--mono); font-size: 11px; font-weight: 600;
+      color: var(--text-muted); background: var(--surface);
+      border: 1px solid var(--border); border-radius: 8px;
+      padding: 5px 10px; cursor: pointer; transition: all 0.15s;
     }
     .preset-btn:hover { color: var(--text); border-color: var(--border-hi); }
     .preset-btn.active { color: var(--blue); border-color: rgba(10,132,255,0.4); background: rgba(10,132,255,0.08); }
 
-    /* ── LANG TOGGLE ── */
-    .header-inner {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      position: relative;
-    }
-    .lang-btn {
-      position: absolute;
-      right: 0;
-      font-family: var(--font);
-      font-size: 12px;
-      font-weight: 600;
-      color: var(--text-muted);
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      padding: 4px 10px;
-      cursor: pointer;
-      transition: all 0.15s;
-    }
-    .lang-btn:hover { color: var(--text); border-color: var(--border-hi); }
-
-    /* ── RESPONSIVE ── */
+    /* RESPONSIVE */
     @media (max-width: 600px) {
       .header { padding: 12px 16px; }
       .header-title { font-size: 15px; }
-
-      .content {
-        padding: 16px 16px calc(32px + env(safe-area-inset-bottom));
-      }
-
+      .content { padding: 16px 16px calc(32px + env(safe-area-inset-bottom)); }
       .section { margin-bottom: 28px; }
       .section-title { font-size: 19px; }
-
+      .account-inputs { grid-template-columns: 1fr 1fr; }
+      .account-inputs .field:last-child { grid-column: 1 / -1; }
       .danger-inputs { gap: 10px; }
-
-      input[type="number"] {
-        padding: 14px 12px 14px 28px;
-        font-size: 16px;
-      }
-
-      .learn-section table {
-        display: block;
-        overflow-x: auto;
-        -webkit-overflow-scrolling: touch;
-        white-space: nowrap;
-      }
-      .learn-section thead,
-      .learn-section tbody { display: table; width: 100%; min-width: 580px; }
-      .learn-section thead th,
-      .learn-section tbody td { padding: 10px 8px; font-size: 11px; }
-
+      input[type="number"] { padding: 14px 12px 14px 28px; font-size: 16px; }
+      .learn-section table { display: block; overflow-x: auto; -webkit-overflow-scrolling: touch; white-space: nowrap; }
+      .learn-section thead, .learn-section tbody { display: table; width: 100%; min-width: 580px; }
+      .learn-section thead th, .learn-section tbody td { padding: 10px 8px; font-size: 11px; }
       .table-scroll-hint { display: block; }
-
       .mindset-grid { grid-template-columns: 1fr; }
       .traps-grid { grid-template-columns: 1fr; }
     }
-
     @media (max-width: 380px) {
       .danger-inputs { grid-template-columns: 1fr; }
+      .account-inputs { grid-template-columns: 1fr; }
+      .account-inputs .field:last-child { grid-column: auto; }
       .section-title { font-size: 17px; }
+      .trade-summary { grid-template-columns: 1fr; }
     }
   </style>
 </head>
 <body>
 
-  <!-- ── HEADER ── -->
   <div class="header">
     <div class="header-inner">
       <div class="header-title">PSC <span>· Position Sizing Calculator</span></div>
@@ -374,10 +311,52 @@
     </div>
   </div>
 
-  <!-- ── CONTENT ── -->
   <div class="content">
 
-    <!-- Danger demo -->
+    <!-- Account Setup -->
+    <div class="section">
+      <div class="section-title green" data-i18n="title_account">帳戶設定</div>
+      <div class="account-inputs">
+        <div class="field">
+          <label data-i18n="lbl_acct_size">帳戶資金</label>
+          <div class="input-wrap">
+            <span class="pfx">$</span>
+            <input type="number" id="acctSize" placeholder="10000" min="100" step="100" inputmode="decimal" oninput="updateAccount()">
+          </div>
+        </div>
+        <div class="field">
+          <label data-i18n="lbl_risk_pct">風險比例</label>
+          <div class="input-wrap">
+            <span class="pfx">%</span>
+            <input type="number" id="riskPct" placeholder="1.0" min="0.1" max="10" step="0.1" inputmode="decimal" oninput="updateAccount()">
+          </div>
+          <div class="presets">
+            <button class="preset-btn" onclick="setAcctPreset(0.5)">0.5%</button>
+            <button class="preset-btn" onclick="setAcctPreset(1)">1%</button>
+            <button class="preset-btn" onclick="setAcctPreset(1.5)">1.5%</button>
+            <button class="preset-btn" onclick="setAcctPreset(2)">2%</button>
+          </div>
+        </div>
+        <div class="field">
+          <label data-i18n="lbl_commission">手續費/股</label>
+          <div class="input-wrap">
+            <span class="pfx">$</span>
+            <input type="number" id="commission" placeholder="0.005" min="0" step="0.001" inputmode="decimal" oninput="updateDanger()">
+          </div>
+          <div class="presets">
+            <button class="preset-btn" onclick="setCommPreset(0)">$0</button>
+            <button class="preset-btn" onclick="setCommPreset(0.0035)">$0.0035</button>
+            <button class="preset-btn" onclick="setCommPreset(0.005)">$0.005</button>
+          </div>
+        </div>
+      </div>
+      <div class="acct-derived" id="acctDerived" style="display:none">
+        <span class="acct-derived-label" data-i18n="lbl_max_risk_auto">Auto Max Risk</span>
+        <span id="acctDerivedVal" style="font-weight:700">—</span>
+      </div>
+    </div>
+
+    <!-- Calculator -->
     <div class="section learn-section">
       <div class="section-title red" data-i18n="title_danger">固定股數的危險</div>
       <div class="danger-inputs">
@@ -385,14 +364,18 @@
           <label data-i18n="lbl_entry">Entry 入場</label>
           <div class="input-wrap">
             <span class="pfx">$</span>
-            <input type="number" id="dEntry" placeholder="10.00" min="0.01" step="0.01" inputmode="decimal" oninput="updateDanger()">
+            <input type="number" id="dEntry" placeholder="10.00" min="0.01" step="0.01" inputmode="decimal" oninput="onEntryInput()">
           </div>
         </div>
         <div class="field">
           <label data-i18n="lbl_stop">Stop 止損</label>
-          <div class="input-wrap">
+          <div class="input-wrap stop-wrap">
             <span class="pfx">$</span>
-            <input type="number" id="dStop" placeholder="9.50" min="0.01" step="0.01" inputmode="decimal" oninput="updateDanger()">
+            <input type="number" id="dStop" placeholder="9.90" min="0.01" step="0.01" inputmode="decimal" oninput="onStopInput()">
+            <div class="step-btns">
+              <button class="step-btn" onclick="stepStop(-1)" aria-label="decrease">−</button>
+              <button class="step-btn" onclick="stepStop(+1)" aria-label="increase">+</button>
+            </div>
           </div>
         </div>
         <div class="field">
@@ -442,9 +425,45 @@
         <tbody id="dangerBody"></tbody>
       </table>
 
+      <!-- Trade Summary -->
+      <div class="trade-summary" id="tradeSummary" style="display:none">
+        <div class="summary-card">
+          <div class="summary-label" data-i18n="sum_bp">佔用資金</div>
+          <div class="summary-value" id="sumBP">—</div>
+          <div class="summary-sub" id="sumBPSub"></div>
+        </div>
+        <div class="summary-card">
+          <div class="summary-label" data-i18n="sum_shares_calc">計算股數</div>
+          <div class="summary-value" id="sumShares">—</div>
+          <div class="summary-sub" id="sumSharesSub"></div>
+        </div>
+        <div class="summary-card" id="commCard" style="display:none">
+          <div class="summary-label" data-i18n="sum_comm">總手續費</div>
+          <div class="summary-value" id="sumComm">—</div>
+          <div class="summary-sub" id="sumCommSub"></div>
+        </div>
+        <div class="summary-card" id="beCard" style="display:none">
+          <div class="summary-label" data-i18n="sum_be">真實盈虧平衡</div>
+          <div class="summary-value" id="sumBE">—</div>
+          <div class="summary-sub" id="sumBESub"></div>
+        </div>
+      </div>
+
       <div class="risk-note" id="riskNote" style="display:none" data-i18n-tpl="risk_note">
         ⚠ 同樣股數，不同止損距離，虧損差距 <strong id="riskRangeSpan">—</strong>。這就是風控失控。
       </div>
+
+      <button class="log-btn" id="logBtn" onclick="logTrade()" disabled data-i18n="btn_log">記錄此交易</button>
+    </div>
+
+    <!-- Trade Log -->
+    <div class="section">
+      <div class="section-title blue" data-i18n="title_tradelog">交易記錄</div>
+      <div class="log-header">
+        <span class="log-count" id="logCount"></span>
+        <button class="log-clear-btn" onclick="clearLog()" data-i18n="btn_clear_log">清除記錄</button>
+      </div>
+      <div id="tradeLogList"></div>
     </div>
 
     <!-- Mindset -->
@@ -481,11 +500,12 @@
       </div>
     </div>
 
-  </div><!-- /content -->
+  </div>
 
   <script>
     const $ = id => document.getElementById(id);
-    const FIELD_ORDER = ['dEntry', 'dStop', 'dRisk', 'dShares'];
+    const FIELD_ORDER = ['acctSize','riskPct','commission','dEntry','dStop','dRisk','dShares'];
+    const LOG_KEY = 'psc_trade_log';
 
     function fmt(n, d = 2) {
       return '$' + n.toFixed(d).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
@@ -495,13 +515,20 @@
     let lang = 'zh';
     const I18N = {
       zh: {
+        title_account: '帳戶設定',
+        lbl_acct_size: '帳戶資金', lbl_risk_pct: '風險比例',
+        lbl_commission: '手續費/股', lbl_max_risk_auto: 'Auto Max Risk →',
         title_danger: '固定股數的危險',
-        lbl_entry: 'Entry 入場',
-        lbl_stop: 'Stop 止損',
+        lbl_entry: 'Entry 入場', lbl_stop: 'Stop 止損',
         lbl_risk: 'Max Risk 1R <span>（留空則用固定股數）</span>',
         lbl_shares: 'Fixed Shares <span>（留空則用 1R）</span>',
         scroll_hint: '← 左右滑動查看 →',
         th_stop: '止損位', th_loss: '總虧損', th_risk: '風險',
+        sum_bp: '佔用資金', sum_shares_calc: '計算股數',
+        sum_comm: '總手續費', sum_be: '真實盈虧平衡',
+        btn_log: '記錄此交易',
+        title_tradelog: '交易記錄', btn_clear_log: '清除記錄',
+        log_empty: '尚無記錄 — 完成計算後按「記錄此交易」',
         title_mindset: '核心心法',
         tag_wrong: '❌ 錯誤', tag_right: '✅ 正確',
         mbox_wrong_text: '「我看好這隻，<em>買 1000 股</em>吧。」',
@@ -514,20 +541,28 @@
         trap2_title: '被 Noise 洗出場',
         trap2_text: '怕虧就把止損硬壓緊，結果被輕微震盪掃走，方向對了卻賠錢。',
         risk_note: '⚠ 同樣股數，不同止損距離，虧損差距 <strong id="riskRangeSpan">—</strong>。這就是風控失控。',
-        // dynamic labels used in table rows
         stop_very_tight: '極緊', stop_tight: '很緊', stop_normal: '一般',
         stop_fair: '合理', stop_wide: '較寬',
         your_stop: '你的止損', shares_unit: '股', pill_safe: '安全',
         pill_low: '低', pill_med: '中', pill_high: '高', pill_max: '極高',
+        of_acct: '帳戶佔比', rps_unit: '/股 止損',
+        comm_note: '手續費 (買+賣)', be_note: '含手續費後盈虧平衡',
       },
       en: {
+        title_account: 'Account Setup',
+        lbl_acct_size: 'Account Size', lbl_risk_pct: 'Risk %',
+        lbl_commission: 'Commission/sh', lbl_max_risk_auto: 'Auto Max Risk →',
         title_danger: 'The Danger of Fixed Shares',
-        lbl_entry: 'Entry Price',
-        lbl_stop: 'Stop Loss',
+        lbl_entry: 'Entry Price', lbl_stop: 'Stop Loss',
         lbl_risk: 'Max Risk 1R <span>(leave empty to use fixed shares)</span>',
         lbl_shares: 'Fixed Shares <span>(leave empty to use 1R)</span>',
         scroll_hint: '← Swipe to see more →',
         th_stop: 'Stop', th_loss: 'Total Loss', th_risk: 'Risk',
+        sum_bp: 'Buying Power', sum_shares_calc: 'Calc Shares',
+        sum_comm: 'Commission', sum_be: 'True Breakeven',
+        btn_log: 'Log This Trade',
+        title_tradelog: 'Trade Log', btn_clear_log: 'Clear Log',
+        log_empty: 'No trades logged — calculate a setup then tap "Log This Trade"',
         title_mindset: 'Core Mindset',
         tag_wrong: '❌ Wrong', tag_right: '✅ Correct',
         mbox_wrong_text: '"I like this stock, let me <em>buy 1000 shares</em>."',
@@ -544,6 +579,8 @@
         stop_fair: 'Fair', stop_wide: 'Wide',
         your_stop: 'Your stop', shares_unit: 'sh', pill_safe: 'Safe',
         pill_low: 'Low', pill_med: 'Med', pill_high: 'High', pill_max: 'Extreme',
+        of_acct: 'of account', rps_unit: '/sh risk',
+        comm_note: 'commission (buy+sell)', be_note: 'after commission',
       }
     };
 
@@ -560,11 +597,38 @@
       });
       $('langBtn').textContent = lang === 'zh' ? 'EN' : '中文';
       updateDanger();
+      renderLog();
     }
 
     function toggleLang() {
       lang = lang === 'zh' ? 'en' : 'zh';
       applyLang();
+    }
+
+    /* ── Account ── */
+    function updateAccount() {
+      const acct = parseFloat($('acctSize').value);
+      const pct  = parseFloat($('riskPct').value);
+      if (acct > 0 && pct > 0) {
+        const maxRisk = +(acct * pct / 100).toFixed(2);
+        $('dRisk').value = maxRisk;
+        $('acctDerived').style.display = 'flex';
+        $('acctDerivedVal').textContent = fmt(maxRisk, 0);
+        syncPresets();
+      } else {
+        $('acctDerived').style.display = 'none';
+      }
+      updateDanger();
+    }
+
+    function setAcctPreset(pct) {
+      $('riskPct').value = pct;
+      updateAccount();
+    }
+
+    function setCommPreset(val) {
+      $('commission').value = val || '';
+      updateDanger();
     }
 
     /* ── Presets ── */
@@ -581,12 +645,66 @@
         btn.classList.toggle('active', v === riskVal);
       });
       const sharesVal = parseInt($('dShares').value);
-      const sharesMap = { '50': 50, '100': 100, '300': 300, '1k': 1000, '2.4k': 2400, '3.6k': 3600 };
+      const sharesMap = { '50':50,'100':100,'300':300,'1k':1000,'2.4k':2400,'3.6k':3600 };
       $('sharesPresets').querySelectorAll('.preset-btn').forEach(btn => {
-        const v = sharesMap[btn.textContent] || 0;
-        btn.classList.toggle('active', v === sharesVal);
+        btn.classList.toggle('active', (sharesMap[btn.textContent]||0) === sharesVal);
       });
     }
+
+    /* ── Stop auto-fill & scroll ── */
+    let autoStop = true;
+
+    function onEntryInput() {
+      const entry = parseFloat($('dEntry').value);
+      if (!$('dEntry').value) { autoStop = true; $('dStop').value = ''; }
+      else if (autoStop && !isNaN(entry) && entry > 0.10) {
+        $('dStop').value = (entry - 0.10).toFixed(2);
+      }
+      updateDanger();
+    }
+
+    function onStopInput() {
+      autoStop = false;
+      updateDanger();
+    }
+
+    function stepStop(dir) {
+      const entry   = parseFloat($('dEntry').value) || 0;
+      const current = parseFloat($('dStop').value) || (entry > 0.10 ? +(entry - 0.10).toFixed(2) : 0);
+      const newVal  = +(current + dir * 0.10).toFixed(2);
+      if (newVal <= 0 || (entry > 0 && newVal >= entry)) return;
+      $('dStop').value = newVal;
+      autoStop = false;
+      updateDanger();
+    }
+
+    $('dEntry').addEventListener('wheel', e => {
+      e.preventDefault();
+      const delta = e.deltaY < 0 ? 0.05 : -0.05;
+      const entry = +(( parseFloat($('dEntry').value) || 0) + delta).toFixed(2);
+      if (entry <= 0) return;
+      $('dEntry').value = entry;
+      const stopVal = parseFloat($('dStop').value);
+      if (!isNaN(stopVal) && stopVal > 0) {
+        const ns = +(stopVal + delta).toFixed(2);
+        if (ns > 0 && ns < entry) $('dStop').value = ns;
+      } else if (autoStop && entry > 0.10) {
+        $('dStop').value = +(entry - 0.10).toFixed(2);
+      }
+      updateDanger();
+    }, { passive: false });
+
+    $('dStop').addEventListener('wheel', e => {
+      e.preventDefault();
+      const delta   = e.deltaY < 0 ? 0.05 : -0.05;
+      const entry   = parseFloat($('dEntry').value) || 0;
+      const current = parseFloat($('dStop').value) || (entry > 0.10 ? entry - 0.10 : 0);
+      const newVal  = +(current + delta).toFixed(2);
+      if (newVal <= 0 || (entry > 0 && newVal >= entry)) return;
+      $('dStop').value = newVal;
+      autoStop = false;
+      updateDanger();
+    }, { passive: false });
 
     /* ── Danger table ── */
     const STOP_OFFSETS = [
@@ -603,7 +721,6 @@
       if (r <= 700) return { cls: 'pill-high', label: t('pill_high') };
       return             { cls: 'pill-max',  label: t('pill_max') };
     }
-
     function riskColor(r) {
       if (r <= 100) return 'var(--green)';
       if (r <= 300) return 'var(--amber)';
@@ -612,69 +729,62 @@
 
     function makeDangerRow(entry, stop, rps, totalR, label, highlight) {
       const { cls, label: rl } = riskClass(totalR);
-      const t1 = entry + rps;
-      const t2 = entry + rps * 2;
+      const t1 = entry + rps, t2 = entry + rps * 2;
       const tr = document.createElement('tr');
       if (highlight) tr.style.cssText = 'background:rgba(10,132,255,0.08);outline:1px solid rgba(10,132,255,0.25)';
       tr.innerHTML = `
         <td style="color:var(--text)">${fmt(stop)} <span style="font-size:10px;color:${highlight?'var(--blue)':'var(--text-muted)'}">(${label})</span></td>
         <td style="color:var(--text-muted)">${fmt(rps)}</td>
-        <td style="color:${riskColor(totalR)};font-weight:600">${fmt(totalR, 0)}</td>
-        <td>
-          <span style="color:var(--text);font-weight:600">${fmt(t1)}</span>
-          <span style="color:var(--green);font-size:10px"> +${fmt(totalR, 0)}</span>
-        </td>
-        <td>
-          <span style="color:var(--text);font-weight:600">${fmt(t2)}</span>
-          <span style="color:var(--green);font-size:10px"> +${fmt(totalR * 2, 0)}</span>
-        </td>
-        <td><span class="pill ${cls}">${rl}</span></td>
-      `;
+        <td style="color:${riskColor(totalR)};font-weight:600">${fmt(totalR,0)}</td>
+        <td><span style="color:var(--text);font-weight:600">${fmt(t1)}</span> <span style="color:var(--green);font-size:10px">+${fmt(totalR,0)}</span></td>
+        <td><span style="color:var(--text);font-weight:600">${fmt(t2)}</span> <span style="color:var(--green);font-size:10px">+${fmt(totalR*2,0)}</span></td>
+        <td><span class="pill ${cls}">${rl}</span></td>`;
       return tr;
     }
+
+    let _lastShares = 0, _lastEntry = 0, _lastStop = 0, _lastRisk = 0;
 
     function updateDanger() {
       const entry      = parseFloat($('dEntry').value);
       const actualStop = parseFloat($('dStop').value);
       const maxRisk    = parseFloat($('dRisk').value);
       const fixShares  = parseInt($('dShares').value);
+      const comm       = parseFloat($('commission').value) || 0;
+      const baseEntry  = entry || 10;
 
-      const baseEntry = entry || 10;
+      _lastShares = 0; _lastEntry = 0; _lastStop = 0; _lastRisk = 0;
+
       const tbody = $('dangerBody');
       tbody.innerHTML = '';
       let minR = Infinity, maxR = -Infinity;
 
-      let shares;
-      if (actualStop && actualStop > 0 && actualStop < baseEntry && maxRisk > 0) {
-        const rps = baseEntry - actualStop;
-        shares = Math.max(1, Math.floor(maxRisk / rps));
-      } else {
-        shares = fixShares || 1000;
-      }
+      let shares = (actualStop && actualStop > 0 && actualStop < baseEntry && maxRisk > 0)
+        ? Math.max(1, Math.floor(maxRisk / (baseEntry - actualStop)))
+        : (fixShares || 1000);
 
-      // 1R-calculated row (green)
+      // 1R green row
       if (actualStop && actualStop > 0 && actualStop < baseEntry && maxRisk > 0) {
-        const rps     = +(baseEntry - actualStop).toFixed(4);
-        const calcSh  = Math.max(1, Math.floor(maxRisk / rps));
-        const totalR  = calcSh * rps;
+        const rps    = +(baseEntry - actualStop).toFixed(4);
+        const calcSh = Math.max(1, Math.floor(maxRisk / rps));
+        const totalR = calcSh * rps;
         const stopPct = (rps / baseEntry * 100).toFixed(1);
+        const t1 = baseEntry + rps, t2 = baseEntry + rps * 2;
         const tr = document.createElement('tr');
         tr.style.cssText = 'background:rgba(48,209,88,0.07);outline:1px solid rgba(48,209,88,0.2)';
-        const t1 = baseEntry + rps, t2 = baseEntry + rps * 2;
         tr.innerHTML = `
           <td style="color:var(--text)">${fmt(actualStop)} <span style="font-size:10px;color:var(--green)">✓ 1R (${stopPct}%)</span></td>
           <td style="color:var(--text-muted)">${fmt(rps)}</td>
-          <td style="color:var(--green);font-weight:700">${fmt(totalR, 0)} <span style="font-size:10px;color:rgba(48,209,88,0.6)">(${calcSh} ${t('shares_unit')})</span></td>
+          <td style="color:var(--green);font-weight:700">${fmt(totalR,0)} <span style="font-size:10px;color:rgba(48,209,88,0.6)">(${calcSh} ${t('shares_unit')})</span></td>
           <td><span style="color:var(--text);font-weight:600">${fmt(t1)}</span> <span style="color:var(--green);font-size:10px">+${fmt(totalR,0)}</span></td>
           <td><span style="color:var(--text);font-weight:600">${fmt(t2)}</span> <span style="color:var(--green);font-size:10px">+${fmt(totalR*2,0)}</span></td>
-          <td><span class="pill pill-low">${t('pill_safe')}</span></td>
-        `;
+          <td><span class="pill pill-low">${t('pill_safe')}</span></td>`;
         tbody.appendChild(tr);
         if (totalR < minR) minR = totalR;
         if (totalR > maxR) maxR = totalR;
+        _lastShares = calcSh; _lastEntry = baseEntry; _lastStop = actualStop; _lastRisk = totalR;
       }
 
-      // Actual stop row (blue) if using fixed shares
+      // Blue fixed-shares row
       if (actualStop && actualStop > 0 && actualStop < baseEntry && !maxRisk && fixShares) {
         const rps    = +(baseEntry - actualStop).toFixed(4);
         const totalR = fixShares * rps;
@@ -682,9 +792,10 @@
         if (totalR < minR) minR = totalR;
         if (totalR > maxR) maxR = totalR;
         tbody.appendChild(makeDangerRow(baseEntry, actualStop, rps, totalR, `${t('your_stop')} ${stopPct}%`, true));
+        _lastShares = fixShares; _lastEntry = baseEntry; _lastStop = actualStop; _lastRisk = totalR;
       }
 
-      // Scenario rows (only if no 1R calc)
+      // Scenario rows
       if (!maxRisk) {
         STOP_OFFSETS.forEach(({ key, pct }) => {
           const rps  = +(baseEntry * pct).toFixed(2);
@@ -700,13 +811,125 @@
 
       const showNote = !maxRisk && maxR > -Infinity && minR !== maxR;
       $('riskNote').style.display = showNote ? 'block' : 'none';
-      if (showNote) $('riskRangeSpan').textContent = fmt(minR, 0) + ' ~ ' + fmt(maxR, 0);
+      if (showNote) $('riskRangeSpan').textContent = fmt(minR,0) + ' ~ ' + fmt(maxR,0);
+
+      updateSummary(_lastShares, _lastEntry, _lastStop, _lastRisk, comm);
+      $('logBtn').disabled = !(_lastShares > 0 && _lastEntry > 0);
+    }
+
+    function updateSummary(shares, entry, stop, risk, comm) {
+      if (!shares || !entry) { $('tradeSummary').style.display = 'none'; return; }
+      $('tradeSummary').style.display = 'grid';
+
+      const bp = shares * entry;
+      $('sumBP').textContent = fmt(bp, 0);
+      const acctSize = parseFloat($('acctSize').value);
+      $('sumBPSub').textContent = acctSize > 0
+        ? (bp / acctSize * 100).toFixed(1) + '% ' + t('of_acct')
+        : shares.toLocaleString() + ' × ' + fmt(entry);
+
+      $('sumShares').textContent = shares.toLocaleString() + ' ' + t('shares_unit');
+      $('sumSharesSub').textContent = (stop && entry)
+        ? fmt(entry - stop, 3) + ' ' + t('rps_unit') : '';
+
+      if (comm > 0) {
+        $('commCard').style.display = '';
+        $('sumComm').textContent = fmt(shares * comm * 2, 2);
+        $('sumCommSub').textContent = t('comm_note');
+        $('beCard').style.display = '';
+        $('sumBE').textContent = fmt(entry + comm * 2);
+        $('sumBESub').textContent = t('be_note');
+      } else {
+        $('commCard').style.display = 'none';
+        $('beCard').style.display = 'none';
+      }
+    }
+
+    /* ── Trade Log ── */
+    function getLog() {
+      try { return JSON.parse(localStorage.getItem(LOG_KEY) || '[]'); }
+      catch { return []; }
+    }
+    function saveLog(entries) { localStorage.setItem(LOG_KEY, JSON.stringify(entries)); }
+
+    function logTrade() {
+      if (!_lastShares || !_lastEntry) return;
+      const comm     = parseFloat($('commission').value) || 0;
+      const acctSize = parseFloat($('acctSize').value)   || 0;
+      const bp       = _lastShares * _lastEntry;
+      const now      = new Date();
+      const record   = {
+        id: now.getTime(),
+        date: now.toLocaleDateString('zh-TW'),
+        time: now.toLocaleTimeString('zh-TW', { hour:'2-digit', minute:'2-digit' }),
+        entry: _lastEntry, stop: _lastStop || null,
+        shares: _lastShares, risk: +_lastRisk.toFixed(2),
+        bp: +bp.toFixed(2), comm,
+        acctPct: acctSize > 0 ? +(bp / acctSize * 100).toFixed(1) : null,
+      };
+      const log = getLog();
+      log.unshift(record);
+      if (log.length > 50) log.pop();
+      saveLog(log);
+      renderLog();
+
+      const btn = $('logBtn');
+      const origText = btn.dataset.origText || t('btn_log');
+      btn.dataset.origText = t('btn_log');
+      btn.textContent = lang === 'zh' ? '✓ 已記錄' : '✓ Logged';
+      btn.style.cssText = 'background:rgba(48,209,88,0.12);border-color:rgba(48,209,88,0.3);color:var(--green)';
+      setTimeout(() => {
+        btn.textContent = t('btn_log');
+        btn.style.cssText = '';
+      }, 1200);
+    }
+
+    function deleteLogEntry(id) {
+      saveLog(getLog().filter(e => e.id !== id));
+      renderLog();
+    }
+
+    function clearLog() {
+      if (!getLog().length) return;
+      localStorage.removeItem(LOG_KEY);
+      renderLog();
+    }
+
+    function renderLog() {
+      const log = getLog();
+      $('logCount').textContent = log.length
+        ? (lang === 'zh' ? `共 ${log.length} 筆` : `${log.length} trade${log.length > 1 ? 's' : ''}`)
+        : '';
+      const c = $('tradeLogList');
+      if (!log.length) {
+        c.innerHTML = `<div class="log-empty">${t('log_empty')}</div>`;
+        return;
+      }
+      c.innerHTML = log.map(e => `
+        <div class="log-item">
+          <div class="log-item-data">
+            <div class="log-item-time">${e.date} ${e.time}</div>
+            <div class="log-item-main">
+              E ${fmt(e.entry)} → SL ${e.stop ? fmt(e.stop) : '—'}
+              &nbsp;·&nbsp;<span style="color:var(--text-muted)">${e.shares.toLocaleString()} ${t('shares_unit')}</span>
+            </div>
+            <div class="log-item-sub">
+              Risk <span style="color:var(--amber)">${fmt(e.risk,0)}</span>
+              &nbsp;·&nbsp;BP ${fmt(e.bp,0)}
+              ${e.acctPct ? ` · ${e.acctPct}% acct` : ''}
+              ${e.comm > 0 ? ` · Comm ${fmt(e.shares * e.comm * 2, 2)}` : ''}
+            </div>
+          </div>
+          <button class="log-del-btn" onclick="deleteLogEntry(${e.id})" aria-label="delete">×</button>
+        </div>`).join('');
     }
 
     /* ── Keyboard ── */
     document.addEventListener('keydown', e => {
       if (e.key === 'Escape') {
         document.querySelectorAll('input').forEach(i => i.value = '');
+        autoStop = true;
+        _lastShares = _lastEntry = _lastStop = _lastRisk = 0;
         syncPresets();
         updateDanger();
         return;
@@ -719,10 +942,7 @@
         const idx = fields.indexOf(el);
         if (idx === -1) return;
         for (let i = idx + 1; i < fields.length; i++) {
-          if (!fields[i].value || fields[i].value.trim() === '') {
-            fields[i].focus();
-            return;
-          }
+          if (!fields[i].value) { fields[i].focus(); return; }
         }
         el.blur();
       }
@@ -730,7 +950,8 @@
 
     /* ── Init ── */
     updateDanger();
-    setTimeout(() => $('dEntry').focus(), 100);
+    renderLog();
+    setTimeout(() => $('acctSize').focus(), 100);
   </script>
 </body>
 </html>
