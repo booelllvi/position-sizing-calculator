@@ -805,19 +805,18 @@
         _lastShares = fixShares; _lastEntry = baseEntry; _lastStop = actualStop; _lastRisk = totalR;
       }
 
-      // Scenario rows
-      if (!maxRisk) {
-        STOP_OFFSETS.forEach(({ key, pct }) => {
-          const rps  = +(baseEntry * pct).toFixed(2);
-          const stop = +(baseEntry - rps).toFixed(2);
-          if (stop <= 0) return;
-          if (actualStop && Math.abs(stop - actualStop) < 0.01) return;
-          const totalR = shares * rps;
-          if (totalR < minR) minR = totalR;
-          if (totalR > maxR) maxR = totalR;
-          tbody.appendChild(makeDangerRow(baseEntry, stop, rps, totalR, t(key), false));
-        });
-      }
+      // Scenario rows — always show; shares adapt to maxRisk if set
+      STOP_OFFSETS.forEach(({ key, pct }) => {
+        const rps  = +(baseEntry * pct).toFixed(2);
+        const stop = +(baseEntry - rps).toFixed(2);
+        if (stop <= 0) return;
+        if (actualStop && Math.abs(stop - actualStop) < 0.01) return;
+        const rowShares = maxRisk > 0 ? Math.max(1, Math.floor(maxRisk / rps)) : shares;
+        const totalR    = rowShares * rps;
+        if (totalR < minR) minR = totalR;
+        if (totalR > maxR) maxR = totalR;
+        tbody.appendChild(makeDangerRow(baseEntry, stop, rps, totalR, t(key), false));
+      });
 
       const showNote = !maxRisk && maxR > -Infinity && minR !== maxR;
       $('riskNote').style.display = showNote ? 'block' : 'none';
